@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="./braun-t4/assets/preview.css" />
   <style>
     :root { --navy:#0b192f; --navy2:#132a4e; --gold:#eab308; --vermilion:#ea4c1d; --bg:#f8fafc; --card:#ffffff; --text:#1e293b; --muted:#64748b; }
-    * { box-sizing:border-box; margin:0; padding:0; }
+    @layer reset {
+      * { box-sizing:border-box; margin:0; padding:0; }
+    }
     body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
     .hero { background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; padding:56px 20px; border-bottom:4px solid var(--gold); }
     .container { max-width:1120px; margin:0 auto; }
