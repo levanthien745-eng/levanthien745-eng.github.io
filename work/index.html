@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Van Thien — Brand Systems, Short-Form Motion, DTC Copy & Web Portfolio</title>
+  <meta name="description" content="Selected brand identity systems, 9:16 vertical social video ads, US-market DTC subscription copywriting samples, and live web builds by Le Van Thien." />
+  <style>
+    :root {
+      --bg: #0b111e;
+      --card: #111a2e;
+      --card-2: #16223b;
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --line: #233252;
+      --accent: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(11, 17, 30, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 24px;
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand-id {
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      font-size: 16px;
+    }
+    .brand-id span { color: var(--muted); font-weight: 500; font-size: 14px; margin-left: 8px; }
+    .nav-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      text-decoration: none !important;
+      transition: transform 0.12s ease, border-color 0.12s ease;
+    }
+    .btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .btn-primary {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 44px 24px 80px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 28px;
+      padding-bottom: 38px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 44px;
+    }
+    @media (max-width: 860px) { .hero, .video-grid, .copy-grid, .board-grid { grid-template-columns: 1fr !important; } }
+    .eyebrow {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 34px; line-height: 1.18; margin-bottom: 14px; letter-spacing: -0.02em; }
+    .lead { color: #cbd5e1; font-size: 16.5px; max-width: 680px; }
+    .meta-box {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .meta-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 7px; }
+    .meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .meta-row strong { color: #fff; }
+    section { margin-bottom: 56px; }
+    h2 { font-size: 23px; margin-bottom: 6px; letter-spacing: -0.01em; }
+    .sec-sub { color: var(--muted); font-size: 14.5px; margin-bottom: 22px; }
+    .board-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--line); }
+    .card-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+    .tag {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 11.5px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--card-2);
+      color: #cbd5e1;
+      border: 1px solid var(--line);
+    }
+    .video-grid {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 28px;
+      align-items: start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .phone-frame {
+      background: #050811;
+      border: 2px solid #2d426b;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    }
+    .phone-frame video { width: 100%; height: auto; display: block; aspect-ratio: 9 / 16; background: #000; }
+    .spec-list { list-style: none; display: grid; gap: 12px; margin-top: 14px; }
+    .spec-list li {
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 14.5px;
+    }
+    .spec-list li strong { color: var(--emerald); display: block; margin-bottom: 2px; }
+    .copy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .copy-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+    .copy-card h3 { font-size: 18px; margin-bottom: 6px; color: #fff; }
+    .copy-label {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .copy-sample {
+      background: #090f1c;
+      border-left: 3px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+    .copy-sample p + p { margin-top: 10px; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      color: var(--muted);
+      font-size: 13.5px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-id">LE VAN THIEN <span>Brand Systems • 9:16 Social Video • US DTC Copy &amp; Web</span></div>
+      <nav class="nav-actions">
+        <a class="btn btn-primary" href="./Le_Van_Thien_Resume.pdf" target="_blank" rel="noopener">Download Public Resume (PDF)</a>
+        <a class="btn" href="https://levanthien745-eng.github.io/braun-t4/" target="_blank" rel="noopener">Live Braun T4 UI</a>
+        <a class="btn" href="https://levanthien745-eng.github.io/tokyo-rent-demo/" target="_blank" rel="noopener">Live Conversion Portal</a>
+        <a class="btn" href="https://levanthien745-eng.github.io/" target="_blank" rel="noopener">Main Engineering Hub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Public Portfolio &amp; Verified Resume Pack</div>
+        <h1>Visual Systems, Scroll-Stopping Motion &amp; Conversion Copy Built to Ship Fast.</h1>
+        <p class="lead">
+          8+ years in commercial operations and digital revenue execution paired with hands-on brand identity design, short-form 9:16 Reels/TikTok production, US-market DTC copywriting, and production web engineering. Every asset on this page is public and ready for immediate review.
+        </p>
+      </div>
+      <div class="meta-box">
+        <div class="meta-row"><span>Public PDF Resume</span><strong><a href="./Le_Van_Thien_Resume.pdf" target="_blank">Le_Van_Thien_Resume.pdf</a></strong></div>
+        <div class="meta-row"><span>Email</span><strong>levanthien745@gmail.com</strong></div>
+        <div class="meta-row"><span>WhatsApp / Phone</span><strong>+84 789 326 557</strong></div>
+        <div class="meta-row"><span>Location</span><strong>Vietnam (100% Remote, US/EU/AU Overlap)</strong></div>
+        <div class="meta-row"><span>Tooling</span><strong>Figma, SVG Vector, CapCut, Whisper AI, FFmpeg, HTML/JS</strong></div>
+      </div>
+    </div>
+
+    <section id="branding">
+      <div class="eyebrow">01 // Brand Identity, Software Systems &amp; Interactive UI</div>
+      <h2>Software Branding &amp; Cross-Surface Design Systems</h2>
+      <p class="sec-sub">Editable vector marks, dark/light product UI kits, print stationery, and live web deployments engineered from scratch.</p>
+
+      <div class="board-grid">
+        <article class="card">
+          <img src="./orcserve_board_1_primary.png" alt="Orcserve Primary Vector Brand Identity Board" loading="lazy" />
+          <div class="card-body">
+            <h3>Orcserve: Enterprise GIS Bidirectional Sync Identity</h3>
+            <p style="color:#cbd5e1;font-size:14px;">Custom C1-continuous location pin housing high-contrast twin sync arrows (#0B2F5C Navy &amp; #22C55E Emerald) tested from 1024px down to 16px browser favicons.</p>
+            <div class="tag-row">
+              <span class="tag">Outlined SVG Vector</span>
+              <span class="tag">WCAG AAA Contrast</span>
+              <span class="tag">16px Favicon Proof</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <img src="./orcserve_board_2_live_ui_stationery.png" alt="Orcserve Live Web Header and Print Stationery Suite" loading="lazy" />
+          <div class="card-body">
+            <h3>Orcserve: Live Dark Header UI &amp; Print Stationery System</h3>
+            <p style="color:#cbd5e1;font-size:14px;">Applied directly onto dark SaaS navigation (#061B33), US Letter executive letterhead, and 3.5x2 in bleed-ready business cards.</p>
+            <div class="tag-row">
+              <span class="tag">Dark &amp; Light SaaS UI</span>
+              <span class="tag">Print-Ready 300 DPI</span>
+              <span class="tag"><a href="https://levanthien745-eng.github.io/braun-t4/" target="_blank">Also view: Braun T4 Live UI -&gt;</a></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="video">
+      <div class="eyebrow">02 // 9:16 Short-Form Reels, TikTok &amp; Motion Ads</div>
+      <h2>High-Retention Vertical Video Editing (1080x1920, 30fps, Safe-Zone Verified)</h2>
+      <p class="sec-sub">Built for US and global paid social feeds: immediate hook contrast, beat-matched cuts, kinetic captions inside the middle-70% safe zone, and clean stereo sound design.</p>
+
+      <div class="video-grid">
+        <div class="phone-frame">
+          <video controls playsinline preload="metadata" src="./freelancer_15s_vertical_ad_2802731.mp4"></video>
+        </div>
+        <div>
+          <h3 style="font-size:20px;margin-bottom:8px;">15-Second Kinetic Product UI Vertical Ad (1080x1920, 30fps)</h3>
+          <p style="color:#cbd5e1;font-size:14.5px;">Produced end-to-end (script pacing, kinetic UI card motion, middle-70% typography layout, and 120 BPM 48 kHz stereo instrumental mix) for vertical paid social feeds across Reels, TikTok, and YouTube Shorts.</p>
+          <ul class="spec-list">
+            <li><strong>0.0s - 4.0s Zero-Friction Value Hook</strong>Opens immediately on the core buyer objection ("Posting a project is free / $0.00") with live brief typing and instant state change into an active project post.</li>
+            <li><strong>Strict Middle-70% Safe-Zone Framing</strong>Every headline, quote card, and CTA pill stays clear of the top 288px and bottom 288px so TikTok/Reels overlays never cover copy.</li>
+            <li><strong>4 Beat-Matched Visual Scenes in 15.0s</strong>Clean cut cadence synced to 120 BPM audio: Zero-Cost Post (0-4s) -&gt; Live Quotes in Minutes (4-9s) -&gt; Milestone Release Protection (9-13s) -&gt; Official End Card CTA (13-15s).</li>
+            <li><strong>Production Workflow</strong>Figma storyboards, CapCut, Canva, SVG/HTML kinetic motion, Whisper caption timing, and FFmpeg CFR batch rendering for rapid hook testing. Also view 1080p widescreen UI showcase on <a href="https://www.youtube.com/watch?v=WA0nAQif9yg" target="_blank" rel="noopener">YouTube</a>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="copywriting">
+      <div class="eyebrow">03 // US-Market DTC E-Commerce &amp; Retention Copywriting</div>
+      <h2>Landing Pages, Sensory PDPs &amp; Klaviyo Subscription Flows</h2>
+      <p class="sec-sub">Written for US subscription-first fragrance and daily wellness brands, focusing on sensory specificity, clear offer math, and plain-spoken retention.</p>
+
+      <div class="copy-grid">
+        <div class="copy-card">
+          <span class="copy-label">Sample A // DTC Fragrance Landing Page Hero + Offer Block</span>
+          <h3>NOCTURNE LABS: Extrait Discovery &amp; Subscription</h3>
+          <div class="copy-sample">
+            <p><strong>Headline:</strong> Stop Blind-Buying $190 Bottles Under Department Store Fluorescents.</p>
+            <p><strong>Subhead:</strong> Live in four 22% Extrait de Parfum formulas on your own skin for 14 nights, from crisp Calabrian bergamot at 8 AM to dry Atlas cedar on your collar at midnight. Keep the full 50 ml bottle you reach for most, and your $38 discovery credit pays for month one.</p>
+            <p><strong>Sensory Bullet Architecture:</strong><br/>
+            • <em>01 / Smoked Hinoki &amp; Black Cardamom:</em> Dry temple wood and cracked spice with zero synthetic vanilla dry-down.<br/>
+            • <em>02 / Salt Fig &amp; Crushed Vetiver:</em> Clean coastal rind built to hold up through warm commutes.<br/>
+            • <em>8 to 10 Hour Skin Wear:</em> Bottled at 22% oil concentration so two sprays at the collarbone last past dinner.</p>
+            <p><strong>Micro-CTA:</strong> Build My 4-Scent Trial Kit ($38, Ships Free from NJ, Cancel or Swap Anytime)</p>
+          </div>
+        </div>
+
+        <div class="copy-card">
+          <span class="copy-label">Sample B // DTC Wellness Klaviyo 3-Touch Retention Sequence</span>
+          <h3>STEADY STATE: Daily Magnesium + L-Theanine Sachets</h3>
+          <div class="copy-sample">
+            <p><strong>Email 1 (Day 0 Post-Purchase, Set the Daily Habit):</strong><br/>
+            <em>Subject:</em> Tear pouch #1 tomorrow before your second coffee<br/>
+            "Most people tuck new supplements behind the olive oil and forget them by Thursday. Leave your Steady State box right next to your kettle tonight. Stir one citrus sachet into cold water around 10 AM when caffeine jitters usually kick in, and pay attention to how calm 2 PM feels."</p>
+            <p><strong>Email 2 (Day 19 Pre-Renewal, Prevent Subscription Churn):</strong><br/>
+            <em>Subject:</em> Quick check before Pouch #30 runs out<br/>
+            "Your next 30-day refill ships in 4 days. Still have plenty left? Tap 'Push 2 Weeks' below in one click (no password login needed), or swap Tart Yuzu for Unflavored free."</p>
+            <p><strong>Email 3 (Day 45 Win-Back, Plain-Text Founder Note):</strong><br/>
+            <em>Subject:</em> Was it the taste, the timing, or too many pouches left?<br/>
+            "If Steady State didn't earn a permanent spot on your counter, hit reply with a one-word note so we know what missed. If you just needed a break, use this link for $12 off a single one-time box whenever you're ready."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Le Van Thien • Public Portfolio &amp; Resume Hub • <a href="./Le_Van_Thien_Resume.pdf" target="_blank">Download 2-Page PDF Resume</a></div>
+      <div><a href="mailto:levanthien745@gmail.com">levanthien745@gmail.com</a> • <a href="https://github.com/levanthien745-eng" target="_blank">GitHub</a></div>
+    </footer>
+  </main>
+</body>
+</html>
