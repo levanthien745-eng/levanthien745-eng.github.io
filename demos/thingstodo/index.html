@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ThingsToDoAPI — Interactive Agent Local Events Query Sandbox</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:#090b10;color:#f1f5f9;min-height:100vh;padding:24px 16px;display:flex;justify-content:center;align-items:center}
+.app{width:100%;max-width:920px;background:#111622;border:1px solid #1e293b;border-radius:18px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.hdr{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:23px;letter-spacing:-.4px}
+.sub{color:#94a3b8;font-size:14px;margin-top:4px}
+.pill{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(16,185,129,.14);color:#34d399;border:1px solid rgba(16,185,129,.35)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.cbtn{background:#182034;border:1px solid #293548;color:#cbd5e1;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.cbtn.active,.cbtn:hover{background:#6366f1;color:#fff;border-color:#818cf8}
+.sel{background:#0b101b;border:1px solid #293548;color:#e2e8f0;padding:8px 12px;border-radius:10px;font-size:13px}
+.req{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#070a12;border:1px solid #1e293b;border-radius:10px;padding:10px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#38bdf8;margin-bottom:16px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:1fr 1.1fr;gap:16px}
+@media(max-width:740px){.grid{grid-template-columns:1fr}}
+.list{display:flex;flex-direction:column;gap:10px}
+.ev{background:#0c111d;border:1px solid #1e293b;border-radius:12px;padding:14px}
+.ev h3{font-size:14px;color:#fff;margin-bottom:4px}
+.ev p{font-size:12px;color:#94a3b8}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.t{font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(99,102,241,.16);color:#c7d2fe;font-weight:600}
+.t.src{background:rgba(16,185,129,.14);color:#6ee7b7}
+.jsonbox{background:#070a12;border:1px solid #1e293b;border-radius:12px;padding:14px;display:flex;flex-direction:column}
+.jtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:#94a3b8}
+.cp{background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.cp:hover{background:#334155}
+pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.5;color:#a5f3fc;overflow:auto;max-height:310px;white-space:pre-wrap}
+.foot{margin-top:16px;padding-top:12px;border-top:1px solid #1e293b;display:flex;justify-content:space-between;font-size:12px;color:#64748b;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div><h1>ThingsToDoAPI — Agent Local Events Sandbox</h1><p class="sub">One normalized REST / MCP call across Luma, Eventbrite, Resident Advisor & Meetup — zero duplicates.</p></div>
+    <span class="pill" id="meta">200 OK · 64 ms · Deduped</span>
+  </div>
+  <div class="controls">
+    <button class="cbtn active" onclick="setCity('sf',this)">🌉 San Francisco</button>
+    <button class="cbtn" onclick="setCity('nyc',this)">🗽 New York</button>
+    <button class="cbtn" onclick="setCity('london',this)">🎡 London</button>
+    <select id="cat" class="sel" onchange="render()">
+      <option value="all">Category: All</option>
+      <option value="tech">Tech & AI</option>
+      <option value="music">Music & Nightlife</option>
+      <option value="culture">Food & Culture</option>
+    </select>
+  </div>
+  <div class="req"><span id="ep">GET /v1/events?city=sf&amp;window=48h&amp;dedupe=true</span><span style="color:#6ee7b7">agent_ready: true</span></div>
+  <div class="grid">
+    <div class="list" id="cards"></div>
+    <div class="jsonbox">
+      <div class="jtop"><span>Normalized Agent Payload (JSON)</span><button id="cpBtn" class="cp" onclick="copyJ()">Copy JSON</button></div>
+      <pre id="jout"></pre>
+    </div>
+  </div>
+  <div class="foot"><span>Interactive API Explorer Spec Demo for ThingsToDoAPI</span><span>Sources merged: Luma · Eventbrite · RA · Meetup</span></div>
+</div>
+<script>
+const DB={
+  sf:[
+    {id:'evt_sf_101',title:'SF Local-First AI Builders Night',cat:'tech',time:'Tonight · 18:30 PST',venue:'Shack15, Ferry Building',price:'Free (RSVP)',sources:['Luma','Meetup'],lat:37.7955,lng:-122.3937},
+    {id:'evt_sf_102',title:'Analog Synth & Ambient Live Set',cat:'music',time:'Fri · 21:00 PST',venue:'Gray Area, Mission St',price:'$24',sources:['Resident Advisor','Eventbrite'],lat:37.7644,lng:-122.4193},
+    {id:'evt_sf_103',title:'North Beach Espresso & Bakery Walk',cat:'culture',time:'Sat · 10:00 PST',venue:'Washington Square Park',price:'$35',sources:['Eventbrite'],lat:37.8007,lng:-122.4102}
+  ],
+  nyc:[
+    {id:'evt_ny_201',title:'NYC Agents & MCP Tooling Demo Day',cat:'tech',time:'Tonight · 19:00 EST',venue:'Betaworks, Meatpacking',price:'Free (Approval)',sources:['Luma','Eventbrite'],lat:40.7399,lng:-74.0063},
+    {id:'evt_ny_202',title:'Late-Night Jazz Quartet at Smalls',cat:'music',time:'Fri · 22:30 EST',venue:'West 10th St, Greenwich Village',price:'$30',sources:['Resident Advisor'],lat:40.7342,lng:-74.0028},
+    {id:'evt_ny_203',title:'Smorgasburg Rooftop Tasting Pop-Up',cat:'culture',time:'Sat · 13:00 EST',venue:'Williamsburg Waterfront',price:'$18',sources:['Eventbrite','Meetup'],lat:40.7212,lng:-73.9616}
+  ],
+  london:[
+    {id:'evt_ldn_301',title:'London AI Systems & Rust Meetup',cat:'tech',time:'Thu · 18:30 GMT',venue:'Shoreditch Exchange, E2',price:'Free',sources:['Luma','Meetup'],lat:51.5299,lng:-0.0772},
+    {id:'evt_ldn_302',title:'Fabric Room 2 — Deep Techno Showcase',cat:'music',time:'Fri · 23:00 GMT',venue:'77A Charterhouse St, EC1M',price:'£22',sources:['Resident Advisor'],lat:51.5197,lng:-0.1025},
+    {id:'evt_ldn_303',title:'Borough Market Natural Wine Pairing',cat:'culture',time:'Sat · 16:00 GMT',venue:'Southwark St, SE1',price:'£38',sources:['Eventbrite'],lat:51.5055,lng:-0.0910}
+  ]
+};
+let city='sf',lastJson='';
+function setCity(c,btn){city=c;document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+function render(){
+  const c=cat.value,rows=DB[city].filter(e=>c==='all'||e.cat===c);
+  const ms=52+city.length*4+rows.length*3;
+  meta.textContent='200 OK · '+ms+' ms · '+rows.length+' deduped events';
+  ep.textContent='GET /v1/events?city='+city+(c==='all'?'':'&category='+c)+'&window=48h&dedupe=true';
+  cards.innerHTML=rows.map(e=>'<div class="ev"><h3>'+e.title+'</h3><p>'+e.time+' · '+e.venue+' · <b style="color:#e2e8f0">'+e.price+'</b></p><div class="tags"><span class="t">'+e.cat+'</span>'+e.sources.map(s=>'<span class="t src">'+s+'</span>').join('')+'</div></div>').join('');
+  const payload={ok:true,city,category:c,deduplicated_from:rows.reduce((a,r)=>a+r.sources.length,0),latency_ms:ms,events:rows};
+  lastJson=JSON.stringify(payload,null,2);
+  jout.textContent=lastJson;
+}
+function copyJ(){navigator.clipboard?.writeText(lastJson);cpBtn.textContent='Copied ✓';setTimeout(()=>cpBtn.textContent='Copy JSON',1200);}
+render();
+</script>
+</body>
+</html>
