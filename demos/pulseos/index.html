@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PulseOS Finance — Local-First Mac AI Budgeting Sandbox</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Inter,sans-serif}
+body{background:radial-gradient(circle at top,#141a2b,#07090f 70%);color:#eef2ff;min-height:100vh;padding:24px 16px;display:flex;justify-content:center;align-items:center}
+.mac{width:100%;max-width:860px;background:rgba(17,22,36,.88);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden;backdrop-filter:blur(20px)}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;gap:10px}
+.dots{display:flex;gap:7px}.dots i{width:11px;height:11px;border-radius:50%;display:block}
+.d1{background:#ff5f56}.d2{background:#ffbd2e}.d3{background:#27c93f}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:rgba(39,201,63,.14);color:#6ee7b7;border:1px solid rgba(39,201,63,.35);cursor:pointer;transition:.2s}
+.pill.off{background:rgba(251,191,36,.12);color:#fde68a;border-color:rgba(251,191,36,.35)}
+.main{padding:24px}
+h1{font-size:24px;letter-spacing:-.4px;margin-bottom:6px}
+.sub{color:#94a3b8;font-size:14px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+.card small{color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+.card b{display:block;font-size:22px;margin-top:4px;color:#fff}
+.card .g{color:#34d399;font-size:12px;margin-top:2px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.btn{background:rgba(99,102,241,.16);border:1px solid rgba(129,140,248,.35);color:#e0e7ff;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover,.btn.active{background:#6366f1;color:#fff;border-color:#818cf8}
+.box{background:#0b101d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;min-height:215px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);margin-top:8px;gap:10px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(244,63,94,.16);color:#fda4af;font-weight:600}
+.tag.ok{background:rgba(16,185,129,.16);color:#6ee7b7}
+.act{background:#10b981;color:#052e16;border:none;padding:6px 10px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
+.act.done{background:#1e293b;color:#94a3b8;cursor:default}
+.net{display:flex;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#64748b;flex-wrap:wrap;gap:8px}
+.net span b{color:#34d399}
+</style>
+</head>
+<body>
+<div class="mac">
+  <div class="bar">
+    <div style="display:flex;align-items:center;gap:12px"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><strong style="font-size:13px">PulseOS Finance — Local SQLite + Apple Silicon AI</strong></div>
+    <button id="air" class="pill" onclick="toggleAir()">✈ Airplane Mode: ON · 0 KB Cloud Data</button>
+  </div>
+  <div class="main">
+    <h1>Ask your finances privately — zero cloud upload.</h1>
+    <p class="sub">Interactive local-first sandbox running on 1,428 encrypted local transactions (~/.pulseos/ledger.sqlite).</p>
+    <div class="stats">
+      <div class="card"><small>Monthly Net Cashflow</small><b id="cash">$4,280</b><div class="g" id="sav">+$0/mo reclaimed</div></div>
+      <div class="card"><small>Cloud Egress Monitor</small><b>0.0 KB</b><div class="g">100% on-device inference</div></div>
+      <div class="card"><small>Local Latency</small><b id="lat">42 ms</b><div class="g">M-series Neural Engine</div></div>
+    </div>
+    <div class="presets">
+      <button class="btn active" onclick="run('subs',this)">🔍 Find forgotten subscriptions</button>
+      <button class="btn" onclick="run('runway',this)">🎯 Goal runway ($50K reserve)</button>
+      <button class="btn" onclick="run('dining',this)">🍽 Dining anomaly (Last 90d)</button>
+    </div>
+    <div class="box" id="out"></div>
+    <div class="net"><span>Engine: <b>CoreML Local · SQLite WAL</b></span><span>Outbound packets: <b>0 requests · 0 KB</b></span><span>Interactive Spec Demo for PulseOS Finance</span></div>
+  </div>
+</div>
+<script>
+let reclaimed=0,canceled={};
+const data={
+  subs:{lat:'38 ms',title:'3 dormant recurring charges detected ($114/mo · $1,368/yr)',items:[
+    {id:'s1',name:'Adobe Stock 10-Asset Plan',meta:'Last asset download: 142 days ago',cost:49,badge:'Dormant 4.7 mo'},
+    {id:'s2',name:'CloudSync Pro 2TB Legacy',meta:'Duplicate of iCloud+ 2TB family plan',cost:29,badge:'Duplicate'},
+    {id:'s3',name:'Linear Add-on Seat (Old Org)',meta:'Billed monthly via Apple Card ****4912',cost:36,badge:'Unused seat'}
+  ]},
+  runway:{lat:'51 ms',title:'$50,000 Home Reserve Target — Local Monte Carlo (10,000 runs)',items:[
+    {id:'r1',name:'Current Balance: $31,400 (62.8% funded)',meta:'Base savings rate: $2,150/mo -> Target hit in 8.6 months',cost:0,badge:'Aug 2027',ok:1},
+    {id:'r2',name:'With Dormant Subscriptions Cut',meta:'Boosts savings rate -> cuts 0.5 months off runway',cost:0,badge:'Accelerated',ok:1},
+    {id:'r3',name:'Dining Cap ($550/mo) Scenario',meta:'Adds +$390/mo -> Target hit 1.6 months earlier',cost:0,badge:'Jun 2027',ok:1}
+  ]},
+  dining:{lat:'44 ms',title:'Dining & Delivery Anomaly: +41.2% vs 6-month baseline ($942 vs $667)',items:[
+    {id:'d1',name:'DoorDash Late-Night Orders (11x)',meta:'Average $34.80 after 9:00 PM — $382.80 total',cost:0,badge:'+68% spike'},
+    {id:'d2',name:'Coffee Roasters Weekday Tap',meta:'22 visits · $168.40 (+$44 vs Oct)',cost:0,badge:'Habit drift'},
+    {id:'d3',name:'Weekend Restaurants (4 visits)',meta:'Within normal budget envelope ($390.80)',cost:0,badge:'Normal',ok:1}
+  ]}
+};
+function toggleAir(){const b=document.getElementById('air');b.classList.toggle('off');b.textContent=b.classList.contains('off')?'⚡ Offline Sandbox · Local-Only Enforced (0 KB)':'✈ Airplane Mode: ON · 0 KB Cloud Data';}
+function cut(id,cost){if(canceled[id])return;canceled[id]=1;reclaimed+=cost;document.getElementById('cash').textContent='$'+(4280+reclaimed).toLocaleString();document.getElementById('sav').textContent='+$'+reclaimed+'/mo reclaimed (+$'+(reclaimed*12)+'/yr)';run('subs',document.querySelector('.btn'));}
+function run(key,el){
+  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');
+  const d=data[key];document.getElementById('lat').textContent=d.lat;
+  document.getElementById('out').innerHTML='<div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#c7d2fe">'+d.title+'</div>'+d.items.map(i=>
+    '<div class="row"><div><div style="font-weight:600;font-size:14px">'+i.name+'</div><div style="font-size:12px;color:#94a3b8;margin-top:2px">'+i.meta+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="tag '+(i.ok?'ok':'')+'">'+i.badge+'</span>'+(i.cost?'<button class="act '+(canceled[i.id]?'done':'')+'" onclick="cut(\''+i.id+'\','+i.cost+')">'+(canceled[i.id]?'Flagged ✓':'Flag $'+i.cost+'/mo')+'</button>':'')+'</div></div>'
+  ).join('');
+}
+run('subs',document.querySelector('.btn'));
+</script>
+</body>
+</html>
