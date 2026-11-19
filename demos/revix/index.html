@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revix AI — Custom-Rules PR Review Playground</title>
+<style>
+:root{--bg:#0b0f17;--card:#121826;--line:#232c40;--txt:#e6edf7;--mut:#8b9bb4;--acc:#6366f1;--ok:#10b981;--warn:#f59e0b;--err:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.5 -apple-system,BlinkMacSystemFont,"Inter",sans-serif;background:var(--bg);color:var(--txt);padding:24px 16px}
+.wrap{max-width:980px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#22d3ee);display:grid;place-items:center;color:#fff;font-size:13px}
+.pill{font-size:12px;padding:4px 10px;border-radius:99px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81}
+.grid{display:grid;grid-template-columns:280px 1fr;gap:16px}
+@media(max-width:780px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.sec-t{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.rule{display:flex;gap:10px;padding:10px;border:1px solid var(--line);border-radius:9px;margin-bottom:10px;cursor:pointer;background:#0e1420;transition:.15s}
+.rule:hover{border-color:#4f46e5}.rule input{accent-color:var(--acc);margin-top:3px;width:15px;height:15px;cursor:pointer}
+.rule b{display:block;font-size:13px}.rule small{color:var(--mut);font-size:11.5px}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px}
+.t-err{background:rgba(239,68,68,.15);color:#fca5a5}.t-warn{background:rgba(245,158,11,.15);color:#fcd34d}.t-eu{background:rgba(99,102,241,.2);color:#c7d2fe}
+.pr-hd{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.status{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}
+.st-block{background:rgba(239,68,68,.16);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
+.st-pass{background:rgba(16,185,129,.16);color:#6ee7b7;border:1px solid rgba(16,185,129,.4)}
+.diff{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#0a0e16}
+.ln{display:grid;grid-template-columns:38px 18px 1fr;padding:3px 10px;white-space:pre-wrap;word-break:break-word}
+.ln.add{background:rgba(16,185,129,.09)}.ln.bad{background:rgba(239,68,68,.12)}.ln.fix{background:rgba(99,102,241,.14)}
+.num{color:#4b5563;user-select:none}.sig{color:#10b981;font-weight:700}
+.note{margin:6px 12px 10px 44px;background:#151c2e;border-left:3px solid var(--acc);border-radius:6px;padding:10px 12px;font-family:-apple-system,sans-serif}
+.note-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;font-size:12px}
+.note p{color:#cbd5e1;font-size:12.5px;margin-bottom:8px}
+.btn{background:#1f2937;color:#e2e8f0;border:1px solid #374151;border-radius:6px;padding:4px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#6366f1;color:#fff}.btn.done{background:rgba(16,185,129,.18);border-color:#10b981;color:#6ee7b7}
+footer{margin-top:16px;text-align:center;color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="logo">R</div>Revix AI <span style="font-weight:400;color:var(--mut)">Custom-Rules PR Playground</span></div>
+    <span class="pill">EU-Hosted · Zero Data Retention · Policy-as-Code</span>
+  </header>
+  <div class="grid">
+    <aside class="card">
+      <div class="sec-t"><span>Active Team Rules</span><strong id="cnt" style="color:#fff">3 active</strong></div>
+      <label class="rule"><input type="checkbox" id="r_sql" checked><div><b>Block Unparameterized SQL</b><small>Catch f-string &amp; % queries before merge</small><span class="tag t-err">RVX-SQL-01 · HIGH</span></div></label>
+      <label class="rule"><input type="checkbox" id="r_stripe" checked><div><b>Require Stripe Idempotency</b><small>Enforce idempotency_key on charges</small><span class="tag t-warn">RVX-PAY-04 · CRITICAL</span></div></label>
+      <label class="rule"><input type="checkbox" id="r_gdpr" checked><div><b>EU GDPR Log Redaction</b><small>Prevent raw email/IBAN in structured logs</small><span class="tag t-eu">RVX-EU-12 · GDPR</span></div></label>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)">Toggle team rules to preview inline Revix PR annotations in real time.</div>
+    </aside>
+    <main class="card">
+      <div class="pr-hd">
+        <div><strong>PR #418 · billing/checkout_service.py</strong> <span style="color:var(--mut);font-size:12px">· Python 3.12</span></div>
+        <span id="badge" class="status st-block">3 Violations · Merge Blocked</span>
+      </div>
+      <div id="diff" class="diff"></div>
+    </main>
+  </div>
+  <footer>Interactive Concept Demo for Revix AI · Built by Le Van Thien</footer>
+</div>
+<script>
+const fixed={sql:false,stripe:false,gdpr:false};
+const lines=[
+  {n:12,s:' ',c:'def process_eu_invoice(db, user, amount_eur, req_id):'},
+  {n:13,s:'+',k:'gdpr',bad:'    logger.info(f"Charging customer {user.email} iban={user.iban}")',ok:'    logger.info("Charging customer", extra={"user_id": user.id})',code:'RVX-EU-12',sev:'GDPR',msg:'PII leak: raw user.email and user.iban logged to plaintext sink. Redact to pseudonymous user.id.'},
+  {n:14,s:'+',k:'sql',bad:'    row = db.execute(f"SELECT * FROM accounts WHERE id = {user.id}")',ok:'    row = db.execute("SELECT * FROM accounts WHERE id = %s", (user.id,))',code:'RVX-SQL-01',sev:'HIGH',msg:'Unparameterized SQL interpolation detected. Use bound parameters to eliminate injection vector.'},
+  {n:15,s:' ',c:'    if not row: raise ValueError("Account not found")'},
+  {n:16,s:'+',k:'stripe',bad:'    return stripe.PaymentIntent.create(amount=amount_eur, currency="eur")',ok:'    return stripe.PaymentIntent.create(amount=amount_eur, currency="eur", idempotency_key=req_id)',code:'RVX-PAY-04',sev:'CRITICAL',msg:'Missing Stripe idempotency_key: network retries can double-charge EU customers.'}
+];
+function render(){
+  const on={sql:r_sql.checked,stripe:r_stripe.checked,gdpr:r_gdpr.checked};
+  const activeCount=Object.values(on).filter(Boolean).length;
+  cnt.textContent=`${activeCount} active`;
+  let open=0,html='';
+  for(const l of lines){
+    const hit=l.k&&on[l.k],isFix=l.k&&fixed[l.k];
+    const cls=hit?(isFix?'fix':'bad'):(l.s==='+'?'add':'');
+    const txt=l.k?(isFix?l.ok:l.bad):l.c;
+    html+=`<div class="ln ${cls}"><span class="num">${l.n}</span><span class="sig">${l.s}</span><span>${txt.replace(/</g,'&lt;')}</span></div>`;
+    if(hit){
+      if(!isFix)open++;
+      html+=`<div class="note"><div class="note-top"><span><strong style="color:#a5b4fc">revix-bot</strong> · ${l.code} (${l.sev})</span><button class="btn ${isFix?'done':''}" onclick="toggleFix('${l.k}')">${isFix?'✓ Fix Applied (Undo)':'Apply Suggested Fix'}</button></div><p>${l.msg}</p></div>`;
+    }
+  }
+  diff.innerHTML=html;
+  badge.className='status '+(open?'st-block':'st-pass');
+  badge.textContent=open?`${open} Violation${open>1?'s':''} · Merge Blocked`:'All Active Rules Passing · Ready to Merge';
+}
+function toggleFix(k){fixed[k]=!fixed[k];render();}
+[r_sql,r_stripe,r_gdpr].forEach(el=>el.addEventListener('change',render));
+render();
+</script>
+</body>
+</html>
