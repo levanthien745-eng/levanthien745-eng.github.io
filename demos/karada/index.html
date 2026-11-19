@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Karada — OpenAPI-to-Go-MCP 1-Click Compiler Playground</title>
+<style>
+:root{--bg:#090d16;--card:#101726;--line:#1f2a40;--txt:#e6edf7;--mut:#8b9bb4;--go:#00add8;--acc:#38bdf8;--ok:#34d399}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.5 -apple-system,BlinkMacSystemFont,"Inter",sans-serif;background:var(--bg);color:var(--txt);padding:24px 16px}
+.wrap{max-width:1020px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#00add8,#6366f1);display:grid;place-items:center;color:#fff;font-size:13px}
+.pill{font-size:12px;padding:4px 10px;border-radius:99px;background:rgba(0,173,216,.12);color:#7dd3fc;border:1px solid rgba(56,189,248,.3)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.specs,.mws{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-right:4px}
+.sbtn{background:#0b1220;color:var(--mut);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:600 12.5px ui-monospace,monospace;cursor:pointer}
+.sbtn.on{background:rgba(0,173,216,.16);color:#fff;border-color:var(--go)}
+.mw{display:flex;align-items:center;gap:6px;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+.mw input{accent-color:var(--go);cursor:pointer}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column}
+.chd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.chd strong{font-size:13px}.meta{font-size:11.5px;color:var(--ok);font-family:ui-monospace,monospace}
+pre{flex:1;background:#060911;border:1px solid var(--line);border-radius:9px;padding:13px;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dbeafe;overflow-x:auto;white-space:pre}
+.cbtn{background:#162033;color:#cbd5e1;border:1px solid #2b3a55;border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer}
+.cbtn:hover{border-color:var(--acc);color:#fff}
+.cmd{margin-top:10px;padding:9px 12px;border-radius:8px;background:#0b1322;border:1px dashed #263652;font:12px ui-monospace,monospace;color:#7dd3fc}
+footer{margin-top:16px;text-align:center;color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="mark">K</div>Karada.ai <span style="font-weight:400;color:var(--mut)">OpenAPI → Go MCP Compiler</span></div>
+    <span class="pill" id="stats">Go 1.24 · 6.4 MB static binary · 11ms cold start</span>
+  </header>
+  <div class="bar">
+    <div class="specs">
+      <span class="lbl">Spec:</span>
+      <button class="sbtn on" onclick="pick('crm',this)">crm.json</button>
+      <button class="sbtn" onclick="pick('orders',this)">orders.yaml</button>
+      <button class="sbtn" onclick="pick('jira',this)">jira.json</button>
+    </div>
+    <div class="mws">
+      <span class="lbl">Middleware:</span>
+      <label class="mw"><input type="checkbox" id="m_auth" checked>OAuth2 / RBAC</label>
+      <label class="mw"><input type="checkbox" id="m_rate" checked>Rate Limit</label>
+      <label class="mw"><input type="checkbox" id="m_soc2" checked>SOC2 Audit</label>
+    </div>
+  </div>
+  <div class="grid">
+    <section class="card">
+      <div class="chd"><strong>Compiled Go MCP Server · cmd/mcp/main.go</strong><span class="meta" id="toolCnt">3 tools compiled</span></div>
+      <pre id="goOut"></pre>
+      <div class="cmd" id="cli"></div>
+    </section>
+    <section class="card">
+      <div class="chd"><strong>Cursor / Claude Code Registry · mcp.json</strong><button class="cbtn" id="cpBtn" onclick="copyJson()">Copy JSON</button></div>
+      <pre id="jsonOut"></pre>
+    </section>
+  </div>
+  <footer>Interactive Concept Demo for Karada.ai · Built by Le Van Thien</footer>
+</div>
+<script>
+let cur='crm';
+const specs={
+  crm:{file:'crm.json',bin:'karada-crm-mcp',base:'https://api.crm.internal/v2',tools:['list_accounts','get_deal_pipeline','update_contact_stage']},
+  orders:{file:'orders.yaml',bin:'karada-orders-mcp',base:'https://api.store.internal/v1',tools:['lookup_order_status','issue_partial_refund','create_shipment_label']},
+  jira:{file:'jira.json',bin:'karada-jira-mcp',base:'https://org.atlassian.net/rest/api/3',tools:['search_sprint_issues','transition_ticket','post_incident_comment']}
+};
+function compile(){
+  const s=specs[cur],auth=m_auth.checked,rate=m_rate.checked,soc2=m_soc2.checked;
+  const mw=[];
+  if(auth)mw.push('  srv.Use(mw.OAuth2RBAC(mw.RequireScopes("mcp:read","mcp:write")))');
+  if(rate)mw.push('  srv.Use(mw.TokenBucket(60, time.Minute)) // per-agent burst guard');
+  if(soc2)mw.push('  srv.Use(mw.SOC2AuditLog(mw.HashPII(true)))');
+  const reg=s.tools.map(t=>`  srv.RegisterTool("${t}", handlers.${t.replace(/(^|_)(\w)/g,(_,__,c)=>c.toUpperCase())})`).join('\n');
+  goOut.textContent=`package main\n\nimport (\n  "time"\n  "github.com/karada-ai/mcp-go/server"\n  "github.com/karada-ai/mcp-go/mw"\n)\n\nfunc main() {\n  srv := server.New("${s.bin}", server.Upstream("${s.base}"))\n${mw.length?mw.join('\n')+'\n':''}${reg}\n  srv.MustServeStdio()\n}`;
+  const env={KARADA_UPSTREAM:s.base};
+  if(auth)env.OAUTH_ISSUER='https://auth.company.com';
+  if(rate)env.MCP_RPM_LIMIT='60';
+  if(soc2)env.SOC2_SINK='https://siem.company.com/ingest';
+  jsonOut.textContent=JSON.stringify({mcpServers:{[s.bin]:{command:`./bin/${s.bin}`,args:['--spec',s.file,'--transport','stdio'],env}}},null,2);
+  cli.textContent=`$ karada compile ${s.file} -o ./bin/${s.bin}${auth?' --rbac':''}${rate?' --rate-limit=60':''}${soc2?' --soc2':''}`;
+  toolCnt.textContent=`${s.tools.length} tools · ${mw.length} middleware`;
+  stats.textContent=`Go 1.24 · ${(5.8+mw.length*0.3).toFixed(1)} MB static binary · ${10+mw.length}ms cold start`;
+}
+function pick(k,el){cur=k;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');compile();}
+function copyJson(){navigator.clipboard?.writeText(jsonOut.textContent);cpBtn.textContent='Copied!';setTimeout(()=>cpBtn.textContent='Copy JSON',1400);}
+[m_auth,m_rate,m_soc2].forEach(el=>el.addEventListener('change',compile));
+compile();
+</script>
+</body>
+</html>
