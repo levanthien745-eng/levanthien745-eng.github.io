@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wonderchat — Zendesk Per-Seat Tax vs Unlimited-Seat AI Support ROI Calculator</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --brand: #4f46e5;
+    --brand-soft: #eef2ff;
+    --emerald: #059669;
+    --emerald-soft: #ecfdf5;
+    --rose: #e11d48;
+    --rose-soft: #fff1f2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+                radial-gradient(circle at 100% 10%, #ecfdf5 0%, transparent 40%), var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 56px; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .mark {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px;
+    box-shadow: 0 8px 22px rgba(79,70,229,0.28);
+  }
+  .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand span { display: block; font-size: 12px; color: var(--muted); }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; }
+  .preset-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+    padding: 7px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: 0.15s;
+  }
+  .preset-btn:hover, .preset-btn.active { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
+
+  .hero { margin-bottom: 26px; }
+  .eyebrow {
+    display: inline-block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--brand); background: var(--brand-soft); padding: 5px 11px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .hero h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 10px; }
+  .hero h2 span { color: var(--brand); }
+  .hero p { color: var(--muted); font-size: 15.5px; max-width: 720px; }
+
+  .layout { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 22px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px;
+    box-shadow: 0 12px 34px rgba(15,23,42,0.06);
+  }
+  .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+  .pill-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--emerald-soft); color: var(--emerald); }
+
+  .control { margin-bottom: 20px; }
+  .control:last-of-type { margin-bottom: 6px; }
+  .control-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .control-top label { font-size: 13.5px; font-weight: 600; color: #334155; }
+  .control-top .num {
+    font-size: 17px; font-weight: 800; color: var(--brand); font-variant-numeric: tabular-nums;
+    background: var(--brand-soft); padding: 2px 10px; border-radius: 8px;
+  }
+  input[type="range"] { width: 100%; accent-color: var(--brand); height: 6px; cursor: pointer; }
+  .ticks { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 5px; }
+
+  .hero-kpi {
+    background: linear-gradient(135deg, #0f172a, #1e1b4b);
+    color: #fff; border-radius: 18px; padding: 22px 24px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .hero-kpi small { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #a5b4fc; font-weight: 700; }
+  .hero-kpi .big-save { font-size: clamp(32px, 4.5vw, 44px); font-weight: 800; letter-spacing: -0.03em; color: #34d399; font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 4px; }
+  .hero-kpi .sub-note { font-size: 12.5px; color: #cbd5e1; margin-top: 4px; }
+  .roi-badge {
+    background: rgba(52,211,153,0.16); border: 1px solid rgba(52,211,153,0.4);
+    color: #6ee7b7; padding: 10px 14px; border-radius: 14px; text-align: center;
+  }
+  .roi-badge strong { display: block; font-size: 24px; font-weight: 800; line-height: 1.1; }
+  .roi-badge span { font-size: 11px; font-weight: 600; }
+
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .kpi {
+    padding: 15px 16px; border-radius: 14px; border: 1px solid var(--border); background: #f8fafc;
+  }
+  .kpi small { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  .kpi strong { display: block; font-size: 22px; font-weight: 800; color: var(--ink); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .kpi span { font-size: 11.5px; color: var(--emerald); font-weight: 600; }
+
+  .bars { padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: #ffffff; margin-bottom: 16px; }
+  .bar-item { margin-bottom: 14px; }
+  .bar-item:last-child { margin-bottom: 0; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .track { width: 100%; height: 14px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; transition: width 0.25s ease; }
+  .fill.zendesk { background: linear-gradient(90deg, #fb7185, #e11d48); }
+  .fill.wonderchat { background: linear-gradient(90deg, #4f46e5, #10b981); }
+
+  .cta-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+  .btn-copy {
+    border: none; background: var(--brand); color: #fff; font-weight: 700; font-size: 13.5px;
+    padding: 11px 16px; border-radius: 11px; cursor: pointer; transition: 0.15s;
+  }
+  .btn-copy:hover { background: #4338ca; }
+  .plan-note { font-size: 12px; color: var(--muted); }
+  .footer {
+    margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <div class="brand">
+      <div class="mark">W</div>
+      <div>
+        <h1>Wonderchat ROI Calculator</h1>
+        <span>Interactive Spec Demo · Unlimited-Seat AI Support vs Legacy Helpdesks</span>
+      </div>
+    </div>
+    <div class="presets">
+      <button class="preset-btn" data-preset="startup">Startup (10 seats)</button>
+      <button class="preset-btn active" data-preset="growth">Growth (20 seats)</button>
+      <button class="preset-btn" data-preset="scale">Scale (55 seats)</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Per-Seat Tax Eliminator</div>
+    <h2>How much is the <span>Zendesk Per-Seat Tax</span> costing your support team?</h2>
+    <p>Legacy helpdesks charge for every agent seat plus AI add-ons — even as AI handles most tickets. Adjust your team metrics below to calculate live annual savings and agent hours returned with Wonderchat's unlimited-seat AI support.</p>
+  </section>
+
+  <div class="layout">
+    <!-- Left Controls -->
+    <section class="card">
+      <h3>Your Support Operations <span class="pill-tag">LIVE MODEL</span></h3>
+
+      <div class="control">
+        <div class="control-top">
+          <label for="seats">Support &amp; Ops Team Seats</label>
+          <span class="num" id="seatsVal">20 seats</span>
+        </div>
+        <input type="range" id="seats" min="3" max="150" step="1" value="20" />
+        <div class="ticks"><span>3</span><span>40</span><span>80</span><span>150 seats</span></div>
+      </div>
+
+      <div class="control">
+        <div class="control-top">
+          <label for="costSeat">Current Helpdesk Cost / Seat / Mo</label>
+          <span class="num" id="costSeatVal">$115 / mo</span>
+        </div>
+        <input type="range" id="costSeat" min="49" max="215" step="2" value="115" />
+        <div class="ticks"><span>$49 (Team)</span><span>$115 (Suite Pro)</span><span>$215 (Ent + AI)</span></div>
+      </div>
+
+      <div class="control">
+        <div class="control-top">
+          <label for="tickets">Monthly Support Tickets</label>
+          <span class="num" id="ticketsVal">6,500 / mo</span>
+        </div>
+        <input type="range" id="tickets" min="500" max="50000" step="500" value="6500" />
+        <div class="ticks"><span>500</span><span>15,000</span><span>30,000</span><span>50,000</span></div>
+      </div>
+
+      <div class="control">
+        <div class="control-top">
+          <label for="deflection">AI Instant Deflection Rate</label>
+          <span class="num" id="deflectionVal">72%</span>
+        </div>
+        <input type="range" id="deflection" min="40" max="85" step="1" value="72" />
+        <div class="ticks"><span>40% conservative</span><span>70% avg Wonderchat</span><span>85% mature KB</span></div>
+      </div>
+    </section>
+
+    <!-- Right Results -->
+    <section class="card">
+      <div class="hero-kpi">
+        <div>
+          <small>Estimated Annual Savings</small>
+          <div class="big-save" id="annualSave">$24,012</div>
+          <div class="sub-note" id="saveBreakdown">Eliminates $27,600/yr in per-seat licensing</div>
+        </div>
+        <div class="roi-badge">
+          <strong id="pctDrop">87%</strong>
+          <span>Software Cost Cut</span>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <small>Agent Hours Returned / Year</small>
+          <strong id="hoursSaved">7,020 hrs</strong>
+          <span id="fteSaved">≈ 3.4 full-time agents freed</span>
+        </div>
+        <div class="kpi">
+          <small>Tickets Auto-Resolved / Mo</small>
+          <strong id="autoResolved">4,680 / mo</strong>
+          <span id="humanLeft">Only 1,820 escalated to humans</span>
+        </div>
+      </div>
+
+      <div class="bars">
+        <div class="bar-item">
+          <div class="bar-label">
+            <span style="color:#be123c">Zendesk Per-Seat Annual Cost</span>
+            <span id="zendeskAnnual" style="color:#be123c">$27,600 / yr</span>
+          </div>
+          <div class="track"><div class="fill zendesk" id="barZendesk" style="width:100%"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label">
+            <span style="color:#4338ca" id="wonderPlanLabel">Wonderchat Unlimited-Seat Plan (Professional)</span>
+            <span id="wonderAnnual" style="color:#059669">$3,588 / yr</span>
+          </div>
+          <div class="track"><div class="fill wonderchat" id="barWonder" style="width:13%"></div></div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <span class="plan-note" id="perTicketNote">Effective cost drops from $0.35 → $0.05 / ticket · Unlimited seats included</span>
+        <button class="btn-copy" id="copyBtn">Copy ROI Summary</button>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <span>Spec concept built for <strong>Wonderchat</strong> · Astro / React embed-ready component</span>
+    <span>Crafted by Le Van Thien · Zero external runtime dependencies</span>
+  </footer>
+</div>
+
+<script>
+  const els = {
+    seats: document.getElementById('seats'),
+    costSeat: document.getElementById('costSeat'),
+    tickets: document.getElementById('tickets'),
+    deflection: document.getElementById('deflection'),
+    seatsVal: document.getElementById('seatsVal'),
+    costSeatVal: document.getElementById('costSeatVal'),
+    ticketsVal: document.getElementById('ticketsVal'),
+    deflectionVal: document.getElementById('deflectionVal'),
+    annualSave: document.getElementById('annualSave'),
+    saveBreakdown: document.getElementById('saveBreakdown'),
+    pctDrop: document.getElementById('pctDrop'),
+    hoursSaved: document.getElementById('hoursSaved'),
+    fteSaved: document.getElementById('fteSaved'),
+    autoResolved: document.getElementById('autoResolved'),
+    humanLeft: document.getElementById('humanLeft'),
+    zendeskAnnual: document.getElementById('zendeskAnnual'),
+    wonderAnnual: document.getElementById('wonderAnnual'),
+    wonderPlanLabel: document.getElementById('wonderPlanLabel'),
+    barZendesk: document.getElementById('barZendesk'),
+    barWonder: document.getElementById('barWonder'),
+    perTicketNote: document.getElementById('perTicketNote'),
+    copyBtn: document.getElementById('copyBtn')
+  };
+
+  let latestSummary = '';
+
+  function wonderTier(tickets) {
+    if (tickets <= 2000) return { name: 'Basic Unlimited', monthly: 99 };
+    if (tickets <= 10000) return { name: 'Turbo Unlimited', monthly: 299 };
+    if (tickets <= 25000) return { name: 'Professional Unlimited', monthly: 499 };
+    return { name: 'Enterprise Unlimited', monthly: 899 };
+  }
+
+  function update() {
+    const seats = Number(els.seats.value);
+    const costSeat = Number(els.costSeat.value);
+    const tickets = Number(els.tickets.value);
+    const defl = Number(els.deflection.value);
+
+    els.seatsVal.textContent = seats + ' seats';
+    els.costSeatVal.textContent = '$' + costSeat + ' / mo';
+    els.ticketsVal.textContent = tickets.toLocaleString('en-US') + ' / mo';
+    els.deflectionVal.textContent = defl + '%';
+
+    const zendeskYr = seats * costSeat * 12;
+    const tier = wonderTier(tickets);
+    const wonderYr = tier.monthly * 12;
+    const savingsYr = Math.max(0, zendeskYr - wonderYr);
+    const pct = zendeskYr > 0 ? Math.round((savingsYr / zendeskYr) * 100) : 0;
+
+    const autoMo = Math.round(tickets * (defl / 100));
+    const humanMo = tickets - autoMo;
+    // Avg 7.5 mins (0.125 hr) per deflected ticket
+    const hrsYr = Math.round(autoMo * 12 * 0.125);
+    const fte = (hrsYr / 2080).toFixed(1);
+
+    els.annualSave.textContent = '$' + savingsYr.toLocaleString('en-US');
+    els.saveBreakdown.textContent = 'Eliminates $' + zendeskYr.toLocaleString('en-US') + '/yr in per-seat licensing (' + seats + ' seats @ $' + costSeat + ')';
+    els.pctDrop.textContent = pct + '%';
+    els.hoursSaved.textContent = hrsYr.toLocaleString('en-US') + ' hrs';
+    els.fteSaved.textContent = '≈ ' + fte + ' full-time agents freed';
+    els.autoResolved.textContent = autoMo.toLocaleString('en-US') + ' / mo';
+    els.humanLeft.textContent = 'Only ' + humanMo.toLocaleString('en-US') + ' escalated to humans';
+
+    els.zendeskAnnual.textContent = '$' + zendeskYr.toLocaleString('en-US') + ' / yr';
+    els.wonderAnnual.textContent = '$' + wonderYr.toLocaleString('en-US') + ' / yr';
+    els.wonderPlanLabel.textContent = 'Wonderchat ' + tier.name + ' ($0/seat)';
+
+    const maxYr = Math.max(zendeskYr, wonderYr, 1);
+    els.barZendesk.style.width = Math.max(6, Math.round((zendeskYr / maxYr) * 100)) + '%';
+    els.barWonder.style.width = Math.max(6, Math.round((wonderYr / maxYr) * 100)) + '%';
+
+    const zPerT = (zendeskYr / (tickets * 12)).toFixed(2);
+    const wPerT = (wonderYr / (tickets * 12)).toFixed(2);
+    els.perTicketNote.textContent = 'Software cost/ticket drops from $' + zPerT + ' → $' + wPerT + ' · Unlimited seats included';
+
+    latestSummary = 'Wonderchat ROI Snapshot: ' + seats + ' seats @ $' + costSeat + '/mo (' + tickets.toLocaleString('en-US') + ' tickets/mo, ' + defl + '% AI deflection) -> Save $' + savingsYr.toLocaleString('en-US') + '/yr (' + pct + '% software cut) & return ' + hrsYr.toLocaleString('en-US') + ' agent hours/yr.';
+  }
+
+  ['seats', 'costSeat', 'tickets', 'deflection'].forEach(k => els[k].addEventListener('input', update));
+
+  const presets = {
+    startup: { seats: 10, costSeat: 89, tickets: 2000, deflection: 68 },
+    growth:  { seats: 20, costSeat: 115, tickets: 6500, deflection: 72 },
+    scale:   { seats: 55, costSeat: 149, tickets: 22000, deflection: 76 }
+  };
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const p = presets[btn.dataset.preset];
+      els.seats.value = p.seats;
+      els.costSeat.value = p.costSeat;
+      els.tickets.value = p.tickets;
+      els.deflection.value = p.deflection;
+      update();
+    });
+  });
+
+  els.copyBtn.addEventListener('click', () => {
+    navigator.clipboard?.writeText(latestSummary).catch(() => {});
+    const old = els.copyBtn.textContent;
+    els.copyBtn.textContent = 'Copied ROI Summary ✓';
+    setTimeout(() => { els.copyBtn.textContent = old; }, 1800);
+  });
+
+  update();
+</script>
+</body>
+</html>
