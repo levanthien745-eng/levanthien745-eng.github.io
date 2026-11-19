@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aircad — Legacy CAD vs Aircad 3-Year TCO Savings Calculator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:#090d16;color:#f1f5f9;min-height:100vh;padding:24px 16px;display:flex;justify-content:center;align-items:center}
+.wrap{width:100%;max-width:880px;background:#0f172a;border:1px solid #1e293b;border-radius:18px;padding:28px;box-shadow:0 28px 80px rgba(0,0,0,.55)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.badge{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(56,189,248,.14);color:#38bdf8;border:1px solid rgba(56,189,248,.3)}
+h1{font-size:24px;letter-spacing:-.4px;margin-bottom:6px}
+.sub{font-size:14px;color:#94a3b8;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.panel{background:#0b1120;border:1px solid #1e293b;border-radius:14px;padding:20px}
+.ctl{margin-bottom:18px}
+.ctl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#cbd5e1;margin-bottom:8px}
+.ctl label span{color:#38bdf8;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:#38bdf8;cursor:pointer}
+.chk{display:flex;align-items:center;gap:9px;font-size:13px;color:#cbd5e1;margin-top:8px;cursor:pointer}
+.hero{background:linear-gradient(135deg,rgba(16,185,129,.16),rgba(56,189,248,.12));border:1px solid rgba(52,211,153,.35);border-radius:12px;padding:16px;margin-bottom:16px}
+.hero small{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#6ee7b7;font-weight:700}
+.hero b{display:block;font-size:34px;color:#fff;margin:4px 0;font-variant-numeric:tabular-nums}
+.hero p{font-size:13px;color:#a7f3d0}
+.bars{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+.barrow small{display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin-bottom:5px}
+.track{height:12px;background:#1e293b;border-radius:999px;overflow:hidden}
+.fill{height:100%;border-radius:999px;transition:.25s}
+.f-old{background:linear-gradient(90deg,#f43f5e,#fb7185)}
+.f-new{background:linear-gradient(90deg,#0ea5e9,#34d399)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.kpi{background:rgba(255,255,255,.03);border:1px solid #1e293b;border-radius:10px;padding:12px}
+.kpi small{font-size:11px;color:#94a3b8;display:block}
+.kpi b{font-size:18px;color:#f8fafc;margin-top:3px;display:block}
+.foot{margin-top:18px;padding-top:12px;border-top:1px solid #1e293b;display:flex;justify-content:space-between;font-size:12px;color:#64748b;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Legacy CAD License vs. Aircad — 3-Year TCO Calculator</h1><p class="sub" style="margin:4px 0 0">Model your engineering team's 3-year software, maintenance, and workstation savings in real time.</p></div>
+    <span class="badge">⚡ Browser-Native CAD</span>
+  </div>
+  <div class="grid">
+    <div class="panel">
+      <div class="ctl"><label>Engineering Seats <span id="vSeats">25 seats</span></label><input id="seats" type="range" min="1" max="250" value="25" oninput="calc()"></div>
+      <div class="ctl"><label>Legacy CAD Cost / Seat / Yr <span id="vOld">$2,800/yr</span></label><input id="old" type="range" min="800" max="6000" step="100" value="2800" oninput="calc()"></div>
+      <div class="ctl"><label>Aircad Cost / Seat / Yr <span id="vNew">$600/yr</span></label><input id="neu" type="range" min="120" max="2400" step="60" value="600" oninput="calc()"></div>
+      <label class="chk"><input id="hw" type="checkbox" checked onchange="calc()"> Include Legacy GPU Workstation + PDM/IT Overhead ($950/seat/yr)</label>
+      <div class="kpis">
+        <div class="kpi"><small>Annual Net Savings</small><b id="yrSav">$0</b></div>
+        <div class="kpi"><small>TCO Reduction</small><b id="pct">0%</b></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="hero"><small>3-Year Total Cost Savings</small><b id="save3">$0</b><p id="payback">Instant payback · Zero local installs or license servers</p></div>
+      <div class="bars">
+        <div class="barrow"><small><span>Legacy CAD 3-Year TCO</span><b id="old3" style="color:#fda4af">$0</b></small><div class="track"><div id="bOld" class="fill f-old" style="width:100%"></div></div></div>
+        <div class="barrow"><small><span>Aircad 3-Year TCO</span><b id="new3" style="color:#6ee7b7">$0</b></small><div class="track"><div id="bNew" class="fill f-new" style="width:20%"></div></div></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><small>Per-Seat 3-Yr Savings</small><b id="perSeat">$0</b></div>
+        <div class="kpi"><small>Onboarding Speed</small><b>&lt; 60 sec</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Interactive Embeddable Pricing / TCO Widget Spec Demo for Aircad</span><span>Zero dependencies · Drop-in &lt;8 KB</span></div>
+</div>
+<script>
+const fmt=n=>'$'+Math.round(n).toLocaleString();
+function calc(){
+  const s=+seats.value,o=+old.value,n=+neu.value,oh=hw.checked?950:0;
+  vSeats.textContent=s+(s===1?' seat':' seats');
+  vOld.textContent=fmt(o)+'/yr';
+  vNew.textContent=fmt(n)+'/yr';
+  const oldY=s*(o+oh),newY=s*n,oldT=oldY*3,newT=newY*3,sav3=Math.max(0,oldT-newT),savY=Math.max(0,oldY-newY);
+  const red=oldT>0?Math.round((sav3/oldT)*100):0;
+  save3.textContent=fmt(sav3);
+  yrSav.textContent=fmt(savY)+'/yr';
+  pct.textContent=red+'%';
+  old3.textContent=fmt(oldT);
+  new3.textContent=fmt(newT);
+  perSeat.textContent=fmt(sav3/s);
+  const max=Math.max(oldT,newT,1);
+  bOld.style.width=Math.round((oldT/max)*100)+'%';
+  bNew.style.width=Math.max(4,Math.round((newT/max)*100))+'%';
+  payback.textContent=sav3>0?'Saves '+fmt(sav3/36)+'/month across '+s+' seats · Instant cloud rollout':'Adjust Aircad rate below legacy cost to view savings';
+}
+calc();
+</script>
+</body>
+</html>
