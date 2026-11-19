@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CatalogAudit.app — Shopify AI Shopping Revenue Leak Calculator</title>
+<style>
+:root{--bg:#06110e;--card:#0c1b16;--b:#1a332a;--t:#ecfdf5;--m:#86efac;--dim:#94a3b8;--g:#10b981;--r:#fb7185;--a:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.5 ui-sans-serif,system-ui,-apple-system,sans-serif;background:radial-gradient(circle at top right,#0d2e22 0%,var(--bg) 55%);color:var(--t);min-height:100vh;padding:24px}
+.wrap{max-width:1020px;margin:0 auto;display:grid;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.logo{font-weight:800;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.tag{font-size:11px;background:#064e3b;color:#6ee7b7;border:1px solid #047857;padding:3px 8px;border-radius:99px;font-weight:600}
+h1{font-size:28px;letter-spacing:-.03em;margin-bottom:4px}
+.sub{color:var(--dim)}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{background:var(--card);border:1px solid var(--b);color:var(--t);padding:7px 12px;border-radius:8px;font:600 12px ui-sans-serif;cursor:pointer}
+.presets button:hover,.presets button.on{border-color:var(--g);background:#0f2920;color:#6ee7b7}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--b);border-radius:14px;padding:18px;display:grid;gap:14px}
+.sl{display:grid;gap:6px}
+.sl-top{display:flex;justify-content:space-between;font-size:13px}
+.sl-top b{font-family:ui-monospace,monospace;color:#6ee7b7}
+input[type=range]{width:100%;accent-color:var(--g);cursor:pointer}
+.big{background:linear-gradient(135deg,#1d0d14,#1a1019);border:1px solid #4c1d2e;border-radius:12px;padding:16px}
+.big span{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#fda4af}
+.big b{display:block;font:800 36px/1.15 ui-monospace,monospace;color:var(--r);margin:4px 0}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.m{background:#081410;border:1px solid var(--b);border-radius:10px;padding:10px}
+.m span{font-size:11px;color:var(--dim);display:block}
+.m b{font:700 16px ui-monospace,monospace;color:var(--t)}
+.cta{display:flex;gap:8px;flex-wrap:wrap}
+.cta input{flex:1;min-width:180px;background:#07130f;border:1px solid var(--b);border-radius:9px;padding:10px 12px;color:#fff;font-size:13px}
+.cta button{background:var(--g);color:#022c22;border:none;border-radius:9px;padding:10px 16px;font:700 13px ui-sans-serif;cursor:pointer}
+.cta button:hover{filter:brightness(1.08)}
+.msg{font-size:12px;color:#6ee7b7;min-height:18px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--b)}
+th{color:var(--dim);font-size:11px;text-transform:uppercase}
+.pill-r{background:#3b1220;color:#fda4af;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600}
+.pill-g{background:#064e3b;color:#6ee7b7;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600}
+@media(max-width:780px){.grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">CatalogAudit.app <span class="tag">Shopify AI Readiness</span></div>
+    <span class="sub" style="font-size:12px">Interactive Spec Demo · ChatGPT / Perplexity / AI Overviews</span>
+  </div>
+  <div>
+    <h1>Shopify AI Shopping Revenue Leak Calculator</h1>
+    <p class="sub">See how much annual GMV your store loses when AI shopping agents skip SKUs with missing structured attributes.</p>
+  </div>
+  <div class="presets">
+    <button class="on" data-p="850,58,120000,18">DTC Beauty (850 SKUs)</button>
+    <button data-p="420,64,75000,22">Apparel Brand (420 SKUs)</button>
+    <button data-p="2400,71,380000,16">Home &amp; Decor (2,400 SKUs)</button>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="sl"><div class="sl-top"><span>Active Shopify SKUs</span><b id="vSku">850</b></div><input id="sku" type="range" min="50" max="5000" step="10" value="850"></div>
+      <div class="sl"><div class="sl-top"><span>Incomplete AI Metadata (%)</span><b id="vInc">58%</b></div><input id="inc" type="range" min="10" max="90" value="58"></div>
+      <div class="sl"><div class="sl-top"><span>Monthly Store Revenue ($)</span><b id="vRev">$120,000</b></div><input id="rev" type="range" min="10000" max="500000" step="5000" value="120000"></div>
+      <div class="sl"><div class="sl-top"><span>AI Discovery Traffic Share (%)</span><b id="vAi">18%</b></div><input id="ai" type="range" min="5" max="45" value="18"></div>
+      <div style="font-size:12px;color:var(--dim)">Formula: Annual Revenue × AI Discovery Share × Incomplete SKU % × 65% agent drop-off factor.</div>
+    </div>
+    <div class="card">
+      <div class="big">
+        <span>Estimated Annual GMV Left on the Table</span>
+        <b id="outYr">$97,718 / yr</b>
+        <div id="outMo" style="font-size:13px;color:#fecdd3">$8,143 / month leaking to better-structured competitors</div>
+      </div>
+      <div class="mini">
+        <div class="m"><span>Invisible SKUs</span><b id="outSku">493 SKUs</b></div>
+        <div class="m"><span>Recoverable Uplift</span><b style="color:var(--g)" id="outUp">+6.8% GMV</b></div>
+        <div class="m"><span>Fix Turnaround</span><b style="color:var(--a)">&lt; 24 hrs</b></div>
+      </div>
+      <div class="cta">
+        <input id="store" placeholder="yourstore.myshopify.com">
+        <button id="fixBtn">Fix 5 Worst SKUs Free →</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">Preview: 5 Worst SKUs Flagged for Immediate AI Enrichment</b><span class="pill-g" id="fixTag">Ready to auto-patch</span></div>
+    <table>
+      <thead><tr><th>SKU</th><th>Missing AI Signals</th><th>AI Visibility</th><th>Est. Leak / yr</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const SKUS=[
+  ['SKU-4019 · Barrier Repair Serum','No GTIN, missing skin-type schema, 0 FAQ pairs','22/100',.27],
+  ['SKU-2814 · Linen Overshirt (Sand)','No material %, missing fit measurements','28/100',.23],
+  ['SKU-7721 · Ceramic Pour-Over Set','Missing dimensions, compatibility & care tags','31/100',.19],
+  ['SKU-1190 · Daily Electrolyte Pack','Missing allergens, serving count, JSON-LD offer','34/100',.17],
+  ['SKU-5502 · Merino Travel Hoodie','Generic 14-word copy, no use-case attributes','37/100',.14]
+];
+function calc(){
+  const sku=+$('sku').value,inc=+$('inc').value,rev=+$('rev').value,ai=+$('ai').value;
+  $('vSku').textContent=sku.toLocaleString();$('vInc').textContent=inc+'%';
+  $('vRev').textContent=fmt(rev);$('vAi').textContent=ai+'%';
+  const yrLeak=rev*12*(ai/100)*(inc/100)*0.65;
+  $('outYr').textContent=fmt(yrLeak)+' / yr';
+  $('outMo').textContent=`${fmt(yrLeak/12)} / month leaking to AI-indexed competitors`;
+  $('outSku').textContent=Math.round(sku*inc/100).toLocaleString()+' SKUs';
+  $('outUp').textContent='+'+((yrLeak/(rev*12))*100).toFixed(1)+'% GMV';
+  $('rows').innerHTML=SKUS.map(s=>`<tr><td><b>${s[0]}</b></td><td style="color:#94a3b8">${s[1]}</td><td><span class="pill-r">${s[2]}</span></td><td style="font-family:monospace;color:#fda4af">${fmt(yrLeak*s[3]*0.32)}</td></tr>`).join('');
+}
+['sku','inc','rev','ai'].forEach(i=>$(i).oninput=calc);
+document.querySelectorAll('.presets button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.presets button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  const [a,c,d,e]=b.dataset.p.split(',');$('sku').value=a;$('inc').value=c;$('rev').value=d;$('ai').value=e;calc();
+});
+$('fixBtn').onclick=()=>{
+  const st=($('store').value.trim()||'your-store.myshopify.com');
+  $('msg').textContent=`✔ Queued free 5-SKU AI Schema & Copy Fix pack for ${st} — JSON-LD + Shopify CSV ready.`;
+  $('fixTag').textContent='5 SKUs Enriched · 96/100 AI Score';
+};
+calc();
+</script>
+</body>
+</html>
