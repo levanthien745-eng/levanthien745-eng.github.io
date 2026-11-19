@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RallyWith.ai — Live Reactive Multi-Human Artifact Playground</title>
+<style>
+:root{--bg:#090b14;--p:#111526;--b:#232a45;--t:#f1f5f9;--m:#94a3b8;--v:#818cf8;--g:#34d399;--a:#fbbf24;--c:#38bdf8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.5 ui-sans-serif,system-ui,-apple-system,sans-serif;background:radial-gradient(circle at top left,#1a1f3d 0%,var(--bg) 55%);color:var(--t);min-height:100vh;padding:24px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.live{font:600 11px ui-monospace,monospace;background:#064e3b;color:#6ee7b7;border:1px solid #047857;padding:3px 9px;border-radius:99px}
+.presence{display:flex;gap:6px;flex-wrap:wrap}
+.av{font-size:12px;background:var(--p);border:1px solid var(--b);padding:4px 10px;border-radius:99px;display:flex;align-items:center;gap:6px}
+.av i{width:7px;height:7px;border-radius:50%;display:inline-block}
+h1{font-size:27px;letter-spacing:-.03em}
+.sub{color:var(--m)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{background:#181e36;color:var(--t);border:1px solid #313b63;padding:9px 14px;border-radius:9px;font:600 13px ui-sans-serif;cursor:pointer;transition:.15s}
+button:hover{border-color:var(--v);transform:translateY(-1px)}
+button.g{border-color:#059669;background:#082b22;color:#6ee7b7}
+button.s{border-color:#6366f1;background:#1e1b4b;color:#c7d2fe}
+button.tw{border-color:#d97706;background:#2a1d0b;color:#fde68a}
+button.rst{margin-left:auto;background:transparent;color:var(--m)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.k{background:var(--p);border:1px solid var(--b);border-radius:12px;padding:13px 15px;transition:.25s}
+.k.flash{border-color:var(--v);box-shadow:0 0 0 2px rgba(129,140,248,.25)}
+.k span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--m)}
+.k b{display:block;font:800 24px ui-monospace,monospace;margin-top:2px}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}
+.card{background:var(--p);border:1px solid var(--b);border-radius:12px;padding:15px;display:grid;gap:11px;align-content:start}
+.ch{display:flex;justify-content:space-between;align-items:center;font:700 12px ui-monospace,monospace;color:var(--m)}
+.bar-bg{height:10px;background:#1e2540;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--v),var(--g));transition:width .3s}
+.deal{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0c1020;border:1px solid var(--b);border-radius:8px;font-size:13px}
+.feed{display:grid;gap:7px;max-height:255px;overflow:auto}
+.ev{padding:8px 10px;background:#0c1020;border-left:3px solid var(--v);border-radius:6px;font-size:12.5px}
+.ev small{display:block;color:var(--m);font:11px ui-monospace,monospace;margin-top:2px}
+@media(max-width:780px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}button.rst{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">RallyWith.ai <span class="live">● LIVE SHARED ARTIFACT · 14ms SYNC</span></div>
+    <div class="presence">
+      <div class="av"><i style="background:#34d399"></i>Alex (Founder)</div>
+      <div class="av"><i style="background:#818cf8"></i>Maya (RevOps)</div>
+      <div class="av"><i style="background:#fbbf24"></i>Sam (AE)</div>
+    </div>
+  </div>
+  <div>
+    <h1>Reactive Multi-Human GTM Artifact</h1>
+    <p class="sub">One living artifact wired to Gmail, Stripe &amp; live teammate edits — zero stale decks or copy-pasted dashboards.</p>
+  </div>
+  <div class="actions">
+    <button class="g" id="bGmail">+Gmail Deal $12K</button>
+    <button class="s" id="bStripe">+Stripe Paid $4.5K</button>
+    <button class="tw" id="bTweak">Teammate Tweak</button>
+    <button class="rst" id="bRst">Reset Artifact</button>
+  </div>
+  <div class="kpis">
+    <div class="k" id="cPipe"><span>Live Pipeline ARR</span><b style="color:var(--c)" id="kPipe">$148,000</b></div>
+    <div class="k" id="cCash"><span>Stripe Cash Collected</span><b style="color:var(--g)" id="kCash">$42,500</b></div>
+    <div class="k" id="cDeals"><span>Active Q4 Deals</span><b id="kDeals">11</b></div>
+    <div class="k" id="cGoal"><span>Q4 Quota Attainment</span><b style="color:var(--a)" id="kGoal">74%</b></div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="ch"><span>SHARED Q4 REVENUE ARTIFACT (TARGET: $200K)</span><span id="owner" style="color:var(--v)">Edited by Alex</span></div>
+      <div class="bar-bg"><div class="bar-fill" id="bar" style="width:74%"></div></div>
+      <div id="deals" style="display:grid;gap:7px"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>LIVE MULTI-HUMAN + CONNECTOR FEED</span><span style="color:var(--g)" id="evCnt">3 events</span></div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>'$'+n.toLocaleString('en-US');
+const NAMES=['Northstar Bio','Kiteworks Cloud','Verve Logistics','Harbor Health','SignalGrid'];
+const TWEAKS=[
+  ['Maya (RevOps)','Updated Q4 weighted close rate from 68% -> 72% (+$8K forecast)',8000],
+  ['Sam (AE)','Moved Acme Annual upgrade to Commit stage (+$6K pipeline)',6000],
+  ['Alex (Founder)','Approved 10% annual prepay incentive -> accelerated Stripe close',4000]
+];
+let S,ti=0,ni=0;
+function init(){
+  S={pipe:148000,cash:42500,deals:11,target:200000,owner:'Synced · Alex, Maya, Sam',
+    list:[{n:'Linearity Labs · Annual',s:'Contract Sent',v:24000},{n:'Orbit Health · Team',s:'Paid · Stripe',v:14500},{n:'PulseOps · Pilot',s:'Negotiation',v:18000}],
+    feed:[{t:'Artifact initialized with live Gmail + Stripe bindings',m:'System · 14ms CRDT sync',c:'#818cf8'},{t:'Maya pinned Q4 ARR target ($200,000) to shared header',m:'Maya (RevOps) · live',c:'#fbbf24'},{t:'Stripe webhook matched Orbit Health invoice ($14,500)',m:'Stripe Connector · verified',c:'#34d399'}]};
+  render();
+}
+function flash(id){const e=$(id);e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),380);}
+function render(){
+  const pct=Math.min(100,Math.round((S.pipe/S.target)*100));
+  $('kPipe').textContent=fmt(S.pipe);$('kCash').textContent=fmt(S.cash);
+  $('kDeals').textContent=S.deals;$('kGoal').textContent=pct+'%';
+  $('bar').style.width=pct+'%';$('owner').textContent=S.owner;$('evCnt').textContent=S.feed.length+' events';
+  $('deals').innerHTML=S.list.slice(0,5).map(d=>`<div class="deal"><span><b>${d.n}</b> <small style="color:#94a3b8">· ${d.s}</small></span><b style="font-family:monospace;color:#6ee7b7">${fmt(d.v)}</b></div>`).join('');
+  $('feed').innerHTML=S.feed.slice(0,7).map(e=>`<div class="ev" style="border-color:${e.c}">${e.t}<small>${e.m}</small></div>`).join('');
+}
+$('bGmail').onclick=()=>{
+  const co=NAMES[ni++%NAMES.length];S.pipe+=12000;S.deals++;S.owner='Triggered via Gmail';
+  S.list.unshift({n:co+' · Enterprise',s:'Gmail Thread -> Qualified',v:12000});
+  S.feed.unshift({t:`+Gmail Deal $12,000 parsed from "${co} Security Review"`,m:'Gmail Live Trigger · 12ms sync to 3 viewers',c:'#34d399'});
+  flash('cPipe');flash('cDeals');flash('cGoal');render();
+};
+$('bStripe').onclick=()=>{
+  S.cash+=4500;S.pipe+=4500;S.owner='Triggered via Stripe';
+  S.list.unshift({n:'Stripe Self-Serve Expansion',s:'Paid · Instant Settlement',v:4500});
+  S.feed.unshift({t:'+Stripe Paid $4,500 settled -> updated shared Cash KPI',m:'Stripe Webhook · 9ms sync to Alex, Maya, Sam',c:'#818cf8'});
+  flash('cCash');flash('cPipe');render();
+};
+$('bTweak').onclick=()=>{
+  const [who,msg,delta]=TWEAKS[ti++%TWEAKS.length];S.pipe+=delta;S.owner='Live edit · '+who;
+  S.feed.unshift({t:`${who}: ${msg}`,m:'Multiplayer CRDT patch · zero reload',c:'#fbbf24'});
+  flash('cPipe');flash('cGoal');render();
+};
+$('bRst').onclick=init;
+init();
+</script>
+</body>
+</html>
