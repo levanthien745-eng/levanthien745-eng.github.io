@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voxoria AI — Multi-API Cost Simulator &amp; MCP 503 Auto-Failover Playground</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: #0e1526;
+    --panel-2: #121c33;
+    --border: rgba(148, 163, 184, 0.16);
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --emerald: #10b981;
+    --violet: #8b5cf6;
+    --rose: #f43f5e;
+    --amber: #f59e0b;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 15% 10%, rgba(56,189,248,0.12), transparent 40%),
+                radial-gradient(circle at 85% 0%, rgba(139,92,246,0.14), transparent 45%), var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 56px; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+    display: grid; place-items: center; font-weight: 800; color: #04101f; font-size: 17px;
+    box-shadow: 0 0 24px rgba(56,189,248,0.35);
+  }
+  .brand h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand span { font-size: 12px; color: var(--muted); display: block; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+    background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+    color: #6ee7b7; font-size: 12px; font-weight: 600;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
+  .hero { margin-bottom: 28px; }
+  .hero h2 { font-size: clamp(26px, 4vw, 38px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 10px; }
+  .hero h2 em { font-style: normal; background: linear-gradient(90deg, #38bdf8, #a78bfa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--muted); max-width: 720px; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 22px; }
+  @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: linear-gradient(180deg, rgba(18,28,51,0.92), rgba(14,21,38,0.96));
+    border: 1px solid var(--border); border-radius: 18px; padding: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  }
+  .card-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 10px; }
+  .card-title h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .badge { font-family: var(--mono); font-size: 11px; padding: 3px 8px; border-radius: 6px; background: rgba(56,189,248,0.14); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.28); }
+  .api-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  @media (max-width: 520px) { .api-list { grid-template-columns: 1fr; } }
+  .api-opt {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 13px; border-radius: 12px;
+    background: rgba(7,11,20,0.55); border: 1px solid var(--border); cursor: pointer; transition: 0.16s ease;
+  }
+  .api-opt:hover { border-color: rgba(56,189,248,0.45); }
+  .api-opt.active { background: rgba(56,189,248,0.09); border-color: rgba(56,189,248,0.55); }
+  .api-opt input { margin-top: 3px; accent-color: #38bdf8; width: 15px; height: 15px; cursor: pointer; }
+  .api-meta strong { display: block; font-size: 13.5px; }
+  .api-meta small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .slider-box { margin-bottom: 20px; padding: 14px 16px; border-radius: 12px; background: rgba(7,11,20,0.55); border: 1px solid var(--border); }
+  .slider-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .slider-head label { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .slider-head .val { font-family: var(--mono); font-size: 18px; font-weight: 700; color: #7dd3fc; }
+  input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; height: 6px; }
+  .scale { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; font-family: var(--mono); margin-top: 6px; }
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .cost-box { padding: 15px; border-radius: 14px; border: 1px solid var(--border); }
+  .cost-box.legacy { background: rgba(244,63,94,0.07); border-color: rgba(244,63,94,0.28); }
+  .cost-box.voxoria { background: rgba(16,185,129,0.09); border-color: rgba(16,185,129,0.36); }
+  .cost-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .cost-num { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; margin: 4px 0 2px; font-family: var(--mono); }
+  .cost-box.legacy .cost-num { color: #fda4af; }
+  .cost-box.voxoria .cost-num { color: #6ee7b7; }
+  .cost-sub { font-size: 12px; color: var(--muted); }
+  .savings-banner {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    padding: 16px 18px; border-radius: 14px;
+    background: linear-gradient(90deg, rgba(16,185,129,0.16), rgba(56,189,248,0.14));
+    border: 1px solid rgba(16,185,129,0.38);
+  }
+  .savings-banner .big { font-size: 24px; font-weight: 800; color: #a7f3d0; font-family: var(--mono); }
+  .savings-banner .meta { font-size: 12.5px; color: #cbd5e1; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip { font-size: 11.5px; padding: 4px 10px; border-radius: 8px; background: rgba(148,163,184,0.1); color: #cbd5e1; font-family: var(--mono); }
+
+  /* Right panel: Failover Playground */
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  select {
+    flex: 1; min-width: 170px; background: #070b14; color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font-family: var(--mono); font-size: 12.5px; outline: none;
+  }
+  .btn {
+    border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 13px;
+    cursor: pointer; transition: 0.15s ease; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-danger { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; box-shadow: 0 6px 20px rgba(244,63,94,0.3); }
+  .btn-danger:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-ghost { background: rgba(148,163,184,0.12); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: rgba(148,163,184,0.2); }
+
+  .topology {
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 8px;
+    padding: 14px; border-radius: 14px; background: rgba(7,11,20,0.72); border: 1px solid var(--border); margin-bottom: 14px;
+  }
+  .node {
+    padding: 10px; border-radius: 10px; border: 1px solid var(--border); text-align: center;
+    background: rgba(18,28,51,0.75); transition: 0.25s ease;
+  }
+  .node strong { display: block; font-size: 12px; }
+  .node span { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+  .node.ok { border-color: rgba(16,185,129,0.55); background: rgba(16,185,129,0.11); }
+  .node.ok span { color: #6ee7b7; }
+  .node.err { border-color: rgba(244,63,94,0.65); background: rgba(244,63,94,0.14); }
+  .node.err span { color: #fda4af; }
+  .arrow { color: #64748b; font-family: var(--mono); font-size: 13px; text-align: center; }
+  .providers { display: flex; flex-direction: column; gap: 8px; }
+
+  .terminal {
+    background: #04070e; border: 1px solid rgba(148,163,184,0.2); border-radius: 14px; overflow: hidden;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .term-bar {
+    display: flex; align-items: center; justify-content: space-between; padding: 9px 14px;
+    background: #0b1120; border-bottom: 1px solid rgba(148,163,184,0.14); color: var(--muted); font-size: 11px;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .term-body { padding: 14px; min-height: 235px; max-height: 270px; overflow-y: auto; line-height: 1.65; }
+  .log { margin-bottom: 4px; white-space: pre-wrap; word-break: break-word; }
+  .t-ts { color: #64748b; }
+  .t-info { color: #7dd3fc; }
+  .t-warn { color: #fcd34d; }
+  .t-err { color: #fb7185; font-weight: 700; }
+  .t-ok { color: #34d399; font-weight: 700; }
+  .metrics-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px;
+  }
+  .m-card { padding: 11px 12px; border-radius: 11px; background: rgba(7,11,20,0.62); border: 1px solid var(--border); }
+  .m-card small { display: block; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .m-card strong { font-family: var(--mono); font-size: 15px; color: #e2e8f0; }
+
+  .footer {
+    margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">V</div>
+      <div>
+        <h1>Voxoria AI — Unified MCP Playground</h1>
+        <span>Interactive Spec Demo · Pay-Per-Cent Multi-API Routing &amp; Zero-Crash Failover</span>
+      </div>
+    </div>
+    <div class="pill"><span class="dot"></span> MCP Gateway Ready · $1 Starter Balance</div>
+  </div>
+
+  <div class="hero">
+    <h2>Stop paying <em>$277+/mo in idle API subscriptions</em> — route every agent call through one resilient MCP.</h2>
+    <p>Toggle your current data providers below to model real monthly spend versus Voxoria pay-per-cent metering, then trigger a live upstream <strong>HTTP 503 outage</strong> to watch instant automatic rerouting.</p>
+  </div>
+
+  <div class="grid">
+    <!-- Left: Cost Calculator -->
+    <section class="card">
+      <div class="card-title">
+        <h3>1. Multi-API Stack Savings Calculator</h3>
+        <span class="badge">LIVE METERING</span>
+      </div>
+
+      <div class="api-list" id="apiList">
+        <label class="api-opt active">
+          <input type="checkbox" data-id="serp" data-base="50" data-percall="0.0045" data-vox="0.0012" checked />
+          <div class="api-meta"><strong>SERP &amp; Web Search</strong><small>Legacy: $50/mo + $4.50/1k · Vox: $1.20/1k</small></div>
+        </label>
+        <label class="api-opt active">
+          <input type="checkbox" data-id="keywords" data-base="99" data-percall="0.0038" data-vox="0.0010" checked />
+          <div class="api-meta"><strong>Keywords &amp; Volume</strong><small>Legacy: $99/mo + $3.80/1k · Vox: $1.00/1k</small></div>
+        </label>
+        <label class="api-opt active">
+          <input type="checkbox" data-id="social" data-base="79" data-percall="0.0030" data-vox="0.0009" checked />
+          <div class="api-meta"><strong>Social &amp; Reddit Signals</strong><small>Legacy: $79/mo + $3.00/1k · Vox: $0.90/1k</small></div>
+        </label>
+        <label class="api-opt active">
+          <input type="checkbox" data-id="appstore" data-base="49" data-percall="0.0025" data-vox="0.0008" checked />
+          <div class="api-meta"><strong>App Store &amp; Reviews</strong><small>Legacy: $49/mo + $2.50/1k · Vox: $0.80/1k</small></div>
+        </label>
+      </div>
+
+      <div class="slider-box">
+        <div class="slider-head">
+          <label for="callsSlider">Total Monthly Agent API Calls</label>
+          <span class="val" id="callsDisplay">25,000 calls/mo</span>
+        </div>
+        <input type="range" id="callsSlider" min="1000" max="250000" step="1000" value="25000" />
+        <div class="scale"><span>1k (Indie)</span><span>50k (Growth)</span><span>125k (Scale)</span><span>250k (Fleet)</span></div>
+      </div>
+
+      <div class="compare-row">
+        <div class="cost-box legacy">
+          <div class="cost-label">Multi-Vendor Stack</div>
+          <div class="cost-num" id="legacyCost">$363</div>
+          <div class="cost-sub" id="legacySub">4 separate keys · $277 fixed floor</div>
+        </div>
+        <div class="cost-box voxoria">
+          <div class="cost-label">Voxoria Pay-Per-Cent MCP</div>
+          <div class="cost-num" id="voxCost">$24.38</div>
+          <div class="cost-sub">1 MCP token · $0 idle monthly floor</div>
+        </div>
+      </div>
+
+      <div class="savings-banner">
+        <div>
+          <div class="meta">Estimated Annual Savings</div>
+          <div class="big" id="annualSavings">$4,063 / yr</div>
+        </div>
+        <div style="text-align:right">
+          <div class="big" id="pctSaved">93%</div>
+          <div class="meta">Lower API spend</div>
+        </div>
+      </div>
+
+      <div class="chips" id="metaChips">
+        <span class="chip">Keys consolidated: 4 → 1</span>
+        <span class="chip">Start with $1.00 top-up</span>
+        <span class="chip">Zero monthly lock-in</span>
+      </div>
+    </section>
+
+    <!-- Right: Interactive 503 Failover Terminal -->
+    <section class="card">
+      <div class="card-title">
+        <h3>2. MCP 503 Auto-Failover Playground</h3>
+        <span class="badge" id="meshStatus">MESH HEALTHY</span>
+      </div>
+
+      <div class="controls">
+        <select id="endpointSelect" aria-label="MCP Tool Endpoint">
+          <option value="serp.google.search">mcp://serp.google.search</option>
+          <option value="keywords.search_volume">mcp://keywords.search_volume</option>
+          <option value="social.reddit.trends">mcp://social.reddit.trends</option>
+          <option value="appstore.reviews.fetch">mcp://appstore.reviews.fetch</option>
+        </select>
+        <button class="btn btn-danger" id="btnFailover">⚡ Simulate Provider-A 503 Outage</button>
+        <button class="btn btn-ghost" id="btnReset">Reset</button>
+      </div>
+
+      <div class="topology">
+        <div class="node ok" id="nodeAgent"><strong>AI Agent</strong><span>Claude / Cursor</span></div>
+        <div class="arrow">──▶</div>
+        <div class="node ok" id="nodeRouter"><strong>Voxoria MCP</strong><span>Edge Router</span></div>
+        <div class="arrow">──▶</div>
+        <div class="providers">
+          <div class="node ok" id="nodeA"><strong>Provider-A</strong><span id="statusA">200 OK · Primary</span></div>
+          <div class="node" id="nodeB"><strong>Provider-B</strong><span id="statusB">Standby · Warm</span></div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="dots"><i style="background:#f43f5e"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i></div>
+          <span id="termTitle">voxoria-mcp-trace · live telemetry</span>
+        </div>
+        <div class="term-body" id="termBody"></div>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="m-card"><small>Total Latency</small><strong id="mLatency">142 ms</strong></div>
+        <div class="m-card"><small>Agent Retries</small><strong id="mRetries">0 crashes</strong></div>
+        <div class="m-card"><small>Billed Cost</small><strong id="mBilled">$0.0012</strong></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">
+    <span>Spec concept built for <strong>Voxoria AI</strong> · Embed-ready single-file HTML/React component</span>
+    <span>Crafted by Le Van Thien · Zero external runtime dependencies</span>
+  </div>
+</div>
+
+<script>
+  const checks = Array.from(document.querySelectorAll('#apiList input[type="checkbox"]'));
+  const slider = document.getElementById('callsSlider');
+  const callsDisplay = document.getElementById('callsDisplay');
+  const legacyCostEl = document.getElementById('legacyCost');
+  const legacySubEl = document.getElementById('legacySub');
+  const voxCostEl = document.getElementById('voxCost');
+  const annualSavingsEl = document.getElementById('annualSavings');
+  const pctSavedEl = document.getElementById('pctSaved');
+  const metaChips = document.getElementById('metaChips');
+
+  function fmt(n) {
+    return n >= 100 ? '$' + Math.round(n).toLocaleString('en-US') : '$' + n.toFixed(2);
+  }
+
+  function recalc() {
+    const calls = Number(slider.value);
+    callsDisplay.textContent = calls.toLocaleString('en-US') + ' calls/mo';
+    let selected = checks.filter(c => c.checked);
+    checks.forEach(c => c.closest('.api-opt').classList.toggle('active', c.checked));
+    if (selected.length === 0) {
+      legacyCostEl.textContent = '$0';
+      voxCostEl.textContent = '$0.00';
+      annualSavingsEl.textContent = '$0 / yr';
+      pctSavedEl.textContent = '0%';
+      legacySubEl.textContent = 'Select at least 1 API category above';
+      return;
+    }
+    const perCatCalls = calls / selected.length;
+    let legacyFixed = 0, legacyVar = 0, voxTotal = 0;
+    selected.forEach(c => {
+      legacyFixed += Number(c.dataset.base);
+      legacyVar += perCatCalls * Number(c.dataset.percall);
+      voxTotal += perCatCalls * Number(c.dataset.vox);
+    });
+    const legacyTotal = legacyFixed + legacyVar;
+    const monthlySave = Math.max(0, legacyTotal - voxTotal);
+    const annualSave = monthlySave * 12;
+    const pct = legacyTotal > 0 ? Math.round((monthlySave / legacyTotal) * 100) : 0;
+
+    legacyCostEl.textContent = fmt(legacyTotal);
+    legacySubEl.textContent = selected.length + ' separate keys · $' + legacyFixed + ' fixed floor';
+    voxCostEl.textContent = fmt(voxTotal);
+    annualSavingsEl.textContent = '$' + Math.round(annualSave).toLocaleString('en-US') + ' / yr';
+    pctSavedEl.textContent = pct + '%';
+    metaChips.innerHTML =
+      '<span class="chip">Keys consolidated: ' + selected.length + ' → 1</span>' +
+      '<span class="chip">Blended rate: $' + ((voxTotal / calls) * 1000).toFixed(2) + ' / 1k calls</span>' +
+      '<span class="chip">Start with $1.00 balance</span>';
+  }
+  checks.forEach(c => c.addEventListener('change', recalc));
+  slider.addEventListener('input', recalc);
+  recalc();
+
+  // Failover Simulator
+  const termBody = document.getElementById('termBody');
+  const endpointSelect = document.getElementById('endpointSelect');
+  const nodeA = document.getElementById('nodeA');
+  const nodeB = document.getElementById('nodeB');
+  const statusA = document.getElementById('statusA');
+  const statusB = document.getElementById('statusB');
+  const meshStatus = document.getElementById('meshStatus');
+  const mLatency = document.getElementById('mLatency');
+  const mRetries = document.getElementById('mRetries');
+  const mBilled = document.getElementById('mBilled');
+  let timers = [];
+
+  function nowTs() {
+    const d = new Date();
+    return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0');
+  }
+  function pushLog(cls, msg) {
+    const div = document.createElement('div');
+    div.className = 'log';
+    div.innerHTML = '<span class="t-ts">[' + nowTs() + ']</span> <span class="' + cls + '">' + msg + '</span>';
+    termBody.appendChild(div);
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+  function resetMesh() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    termBody.innerHTML = '';
+    nodeA.className = 'node ok'; statusA.textContent = '200 OK · Primary';
+    nodeB.className = 'node'; statusB.textContent = 'Standby · Warm';
+    meshStatus.textContent = 'MESH HEALTHY';
+    meshStatus.style.color = '#7dd3fc';
+    mLatency.textContent = '142 ms';
+    mRetries.textContent = '0 crashes';
+    mBilled.textContent = '$0.0012';
+    pushLog('t-info', 'MCP_READY connected to wss://mcp.voxoria.ai/v1 (token: vx_live_****9a2f)');
+    pushLog('t-ok', 'HEALTH_CHECK Provider-A (primary): 200 OK (138ms) | Provider-B (warm standby): ready');
+    pushLog('t-info', 'Awaiting tool invocation... Click "Simulate Provider-A 503 Outage" to test failover.');
+  }
+
+  document.getElementById('btnFailover').addEventListener('click', () => {
+    timers.forEach(clearTimeout);
+    timers = [];
+    const ep = endpointSelect.value;
+    termBody.innerHTML = '';
+    nodeA.className = 'node ok'; statusA.textContent = 'Routing...';
+    nodeB.className = 'node'; statusB.textContent = 'Standby · Warm';
+    meshStatus.textContent = 'FAILOVER ACTIVE';
+    meshStatus.style.color = '#fcd34d';
+
+    pushLog('t-info', 'AGENT_CALL tools/call "' + ep + '" { q: "best ai coding mcp 2026", limit: 10 }');
+    timers.push(setTimeout(() => {
+      pushLog('t-info', 'ROUTER -> Dispatching to Provider-A (primary US-East pool)...');
+    }, 240));
+    timers.push(setTimeout(() => {
+      nodeA.className = 'node err';
+      statusA.textContent = '503 DOWN · Tripped';
+      pushLog('t-err', 'UPSTREAM_ERR Provider-A returned HTTP 503 Service Unavailable (42ms) — rate-limit storm');
+    }, 620));
+    timers.push(setTimeout(() => {
+      pushLog('t-warn', 'CIRCUIT_BREAKER Provider-A marked OPEN (60s cooldown). Zero error surfaced to agent.');
+      pushLog('t-info', 'AUTO_REROUTE Failing over transparently to Provider-B (EU-West warm pool)...');
+      nodeB.className = 'node ok';
+      statusB.textContent = '200 OK · ACTIVE';
+    }, 1050));
+    timers.push(setTimeout(() => {
+      pushLog('t-ok', 'HTTP 200 OK from Provider-B in 168ms — normalized JSON schema verified (10 results)');
+      pushLog('t-ok', 'AGENT_RESULT Delivered cleanly in 210ms total · Billed $0.0011 · 0 failed calls charged');
+      meshStatus.textContent = 'AUTO-REROUTED · 200 OK';
+      meshStatus.style.color = '#6ee7b7';
+      mLatency.textContent = '210 ms';
+      mRetries.textContent = '0 agent errors';
+      mBilled.textContent = '$0.0011';
+    }, 1550));
+  });
+
+  document.getElementById('btnReset').addEventListener('click', resetMesh);
+  resetMesh();
+</script>
+</body>
+</html>
