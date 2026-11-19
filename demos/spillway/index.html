@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spillway for macOS — Interactive Load-Test Simulator & SF Vector Spec Demo</title>
+<style>
+:root{--bg:#0d0e11;--win:#16181d;--bar:#1e2027;--line:rgba(255,255,255,.1);--ink:#f5f5f7;--muted:#98989d;--blue:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,sans-serif;background:radial-gradient(circle at 50% -10%,#1b263b,var(--bg) 55%);color:var(--ink);padding:26px 16px 54px;line-height:1.45}
+.wrap{max-width:1040px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#64d2ff;background:rgba(10,132,255,.14);border:1px solid rgba(10,132,255,.35);padding:5px 12px;border-radius:999px;margin-bottom:12px}
+h1{font-size:clamp(26px,4vw,40px);letter-spacing:-.03em;margin-bottom:8px}
+.sub{color:var(--muted);max-width:680px;font-size:15px;margin-bottom:22px}
+.mac{background:var(--win);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 28px 65px rgba(0,0,0,.55);margin-bottom:22px}
+.titlebar{background:var(--bar);border-bottom:1px solid var(--line);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dots{display:flex;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%}
+.r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
+.urlpill{font-family:ui-monospace,SFMono-Regular,monospace;font-size:12px;color:#d1d1d6;background:#111318;border:1px solid var(--line);padding:5px 12px;border-radius:8px}
+.sim-body{display:grid;grid-template-columns:280px 1fr;gap:0}
+@media(max-width:820px){.sim-body{grid-template-columns:1fr}}
+.side{padding:18px;border-right:1px solid var(--line);background:#14161b}
+@media(max-width:820px){.side{border-right:none;border-bottom:1px solid var(--line)}}
+.ctrl{margin-bottom:16px}
+.ctrl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.ctrl strong{color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+.btnrow{display:flex;gap:8px;margin-top:8px}
+.sbtn{flex:1;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#22252d;color:var(--ink);font-size:12.5px;font-weight:600;cursor:pointer}
+.sbtn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.main{padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#111318;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi .v{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+canvas{width:100%;height:210px;display:block;background:#0e1015;border:1px solid var(--line);border-radius:10px}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+.icons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+@media(max-width:760px){.icons-grid{grid-template-columns:1fr}}
+.icard{background:var(--win);border:1px solid var(--line);border-radius:14px;padding:18px}
+.icard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sfbox{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(10,132,255,.22),rgba(48,209,88,.12));border:1px solid rgba(10,132,255,.35)}
+.old{font-size:11px;color:var(--muted);background:#1e2027;padding:4px 8px;border-radius:6px}
+.icard h3{font-size:15px;margin-bottom:5px}
+.icard p{font-size:13px;color:var(--muted)}
+.cta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding:18px 22px;border-radius:14px;background:linear-gradient(135deg,#13233d,#161b26);border:1px solid rgba(10,132,255,.38)}
+.cta a{padding:11px 18px;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;font-size:13.5px}
+.foot{text-align:center;color:#6e6e73;font-size:12px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Spillway · Native macOS Sequoia Spec Demo</div>
+  <h1>Feel Live HTTP Load Curves Right on the Homepage</h1>
+  <p class="sub">Interactive in-browser load-test simulator + native SF-style vector iconography replacing generic feature-card emojis (🧩 📈 ⚡) for Spillway’s macOS launch.</p>
+
+  <div class="mac">
+    <div class="titlebar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div class="urlpill">POST https://api.checkout.prod/v2/orders · HTTP/2</div>
+      <div style="font-size:12px;color:var(--green);font-weight:600" id="statusTxt">● Running</div>
+    </div>
+    <div class="sim-body">
+      <div class="side">
+        <div class="ctrl">
+          <label><span>Virtual Users (VUs)</span><strong id="oVu">420 VUs</strong></label>
+          <input id="rVu" type="range" min="10" max="2000" step="10" value="420">
+        </div>
+        <div class="ctrl">
+          <label><span>Backend Saturation</span><strong id="oSat">45%</strong></label>
+          <input id="rSat" type="range" min="10" max="100" step="1" value="45">
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Drag sliders or trigger a traffic burst to watch p99 tail latency diverge in real time.</div>
+        <div class="btnrow">
+          <button class="sbtn pri" id="bSpike">⚡ Traffic Spike</button>
+          <button class="sbtn" id="bToggle">Pause</button>
+        </div>
+      </div>
+      <div class="main">
+        <div class="kpis">
+          <div class="kpi"><div class="k">Throughput</div><div class="v" style="color:var(--blue)" id="kRps">2,840/s</div></div>
+          <div class="kpi"><div class="k">p50 Median</div><div class="v" style="color:var(--green)" id="kP50">28 ms</div></div>
+          <div class="kpi"><div class="k">p99 Tail</div><div class="v" style="color:var(--orange)" id="kP99">94 ms</div></div>
+          <div class="kpi"><div class="k">5xx Errors</div><div class="v" style="color:var(--red)" id="kErr">0.0%</div></div>
+        </div>
+        <canvas id="chart" width="700" height="210"></canvas>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--blue)"></i>RPS Throughput</span>
+          <span><i class="sw" style="background:var(--green)"></i>p50 Latency (ms)</span>
+          <span><i class="sw" style="background:var(--orange)"></i>p99 Tail Latency (ms)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="icons-grid">
+    <div class="icard">
+      <div class="icard-top">
+        <div class="sfbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64d2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.8"/><path d="M10 6.5h4M17.5 10v4M6.5 10v5a2 2 0 0 0 2 2H14"/></svg></div>
+        <span class="old">Replaces 🧩</span>
+      </div>
+      <h3>Composable Load Flows</h3>
+      <p>Crisp 1.8px SF-weight vector geometry for chained auth, ramp-up stages, and JSON assertions.</p>
+    </div>
+    <div class="icard">
+      <div class="icard-top">
+        <div class="sfbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18"/><path d="M4 15l4-5 4 3 4-7 4 4"/><circle cx="16" cy="6" r="1.5" fill="#30d158"/></svg></div>
+        <span class="old">Replaces 📈</span>
+      </div>
+      <h3>Live Percentile Telemetry</h3>
+      <p>Native macOS telemetry glyph designed for dark/light Sequoia surfaces at 1× and 2× Retina.</p>
+    </div>
+    <div class="icard">
+      <div class="icard-top">
+        <div class="sfbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff9f0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H12L11 22L19.5 10.5H12L13 2Z"/></svg></div>
+        <span class="old">Replaces ⚡</span>
+      </div>
+      <h3>Apple Silicon Native Engine</h3>
+      <p>Zero-Electron precision mark signaling bare-metal Swift concurrency and minimal memory overhead.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div>
+      <strong style="font-size:16px;display:block;margin-bottom:3px">Want this simulator + full SF vector icon kit & 45s launch video on spillwayapp.com?</strong>
+      <span style="font-size:13px;color:var(--muted)">Production-ready landing upgrade delivered in 48h — $450, zero upfront.</span>
+    </div>
+    <a href="mailto:support@spillwayapp.com?subject=Spillway%20Interactive%20Simulator%20%2B%20Icons">Reply to Ship This →</a>
+  </div>
+  <div class="foot">Interactive Spec Demo crafted for Spillway (support@spillwayapp.com).</div>
+</div>
+<script>
+const cv=document.getElementById('chart'),ctx=cv.getContext('2d');
+const rVu=document.getElementById('rVu'),rSat=document.getElementById('rSat');
+let running=true,spike=0;
+const N=60,rpsH=Array(N).fill(2600),p50H=Array(N).fill(26),p99H=Array(N).fill(85);
+function step(){
+  const vu=+rVu.value,sat=+rSat.value;
+  document.getElementById('oVu').textContent=vu.toLocaleString()+' VUs';
+  document.getElementById('oSat').textContent=sat+'%';
+  if(!running)return;
+  const effSat=Math.min(100,sat+spike);
+  spike=Math.max(0,spike-4);
+  const loadFactor=Math.pow(effSat/100,2.3);
+  const rps=Math.max(60,Math.round(vu*(7.2-loadFactor*4.1)+(Math.random()-.5)*140));
+  const p50=Math.round(14+loadFactor*120+(vu/2000)*28+Math.random()*6);
+  const p99=Math.round(p50*(2.4+loadFactor*4.8)+Math.random()*22);
+  const err=effSat>76?((effSat-76)*0.28).toFixed(1):'0.0';
+  rpsH.push(rps);rpsH.shift();p50H.push(p50);p50H.shift();p99H.push(p99);p99H.shift();
+  document.getElementById('kRps').textContent=rps.toLocaleString()+'/s';
+  document.getElementById('kP50').textContent=p50+' ms';
+  document.getElementById('kP99').textContent=p99+' ms';
+  document.getElementById('kErr').textContent=err+'%';
+  draw();
+}
+function draw(){
+  const w=cv.width,h=cv.height;ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+  for(let y=30;y<h;y+=45){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  const plot=(arr,max,col)=>{
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=2.2;
+    arr.forEach((v,i)=>{
+      const x=i*(w/(N-1)),y=h-14-Math.min(1,v/max)*(h-28);
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    });ctx.stroke();
+  };
+  plot(rpsH,11000,'#0a84ff');plot(p99H,1200,'#ff9f0a');plot(p50H,1200,'#30d158');
+}
+document.getElementById('bSpike').onclick=()=>{spike=42};
+document.getElementById('bToggle').onclick=e=>{
+  running=!running;e.target.textContent=running?'Pause':'Resume';
+  document.getElementById('statusTxt').textContent=running?'● Running':'❚❚ Paused';
+};
+setInterval(step,160);step();
+</script>
+</body>
+</html>
