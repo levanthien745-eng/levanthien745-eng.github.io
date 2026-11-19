@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rystic.ai (YC F26) — Localhost Stateful API Simulator</title>
+<style>
+:root{--bg:#080b12;--panel:#0f1623;--b:#1e293b;--t:#e2e8f0;--m:#94a3b8;--g:#22c55e;--c:#38bdf8;--a:#f59e0b;--r:#fb7185}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.5 ui-sans-serif,system-ui,-apple-system,sans-serif;background:radial-gradient(circle at top,#131d33 0%,var(--bg) 55%);color:var(--t);min-height:100vh;padding:24px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.yc{background:#f26522;color:#fff;font-size:11px;padding:2px 7px;border-radius:4px;font-weight:700}
+.pill{font:12px ui-monospace,monospace;color:var(--g);background:#052e16;border:1px solid #166534;padding:5px 10px;border-radius:99px;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g)}
+.hero h1{font-size:28px;letter-spacing:-.03em;margin-bottom:4px}
+.hero p{color:var(--m);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--b);border-radius:10px;padding:12px 14px}
+.kpi b{display:block;font:700 22px ui-monospace,monospace;margin-top:2px}
+.kpi span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--m)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{background:#111a2c;color:var(--t);border:1px solid var(--b);padding:9px 13px;border-radius:8px;cursor:pointer;font:600 13px ui-sans-serif,system-ui;transition:.15s}
+button:hover{border-color:var(--c);transform:translateY(-1px)}
+button.active{background:#0c233a;border-color:var(--c);color:#fff;box-shadow:0 0 0 1px rgba(56,189,248,.3)}
+button.run{background:#16a34a;border-color:#22c55e;color:#04130a;margin-left:auto}
+button.rst{background:transparent;color:var(--m)}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--b);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.ch{padding:10px 14px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;font:600 12px ui-monospace,monospace;color:var(--m);background:#0b101b}
+.term{padding:14px;font:12.5px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;min-height:290px;max-height:360px;overflow:auto;white-space:pre-wrap}
+.ok{color:var(--g)}.info{color:var(--c)}.warn{color:var(--a)}.err{color:var(--r)}.dim{color:#64748b}
+.foot{display:flex;justify-content:space-between;color:var(--m);font-size:12px;padding-top:4px;flex-wrap:wrap;gap:8px}
+@media(max-width:780px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}button.run{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">rystic.ai <span class="yc">YC F26</span></div>
+    <div class="pill"><span class="dot"></span>localhost:4010 · Stateful API Simulator</div>
+  </div>
+  <div class="hero">
+    <h1>Test AI agents against brutal third-party edge cases — locally, in 1.8ms.</h1>
+    <p>Inject deterministic Stripe, Slack, GitHub & Okta failure states with zero prod spend, zero sandboxes, and full stateful replay.</p>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><span>Prod API Cost</span><b class="ok" id="kCost">$0.00</b></div>
+    <div class="kpi"><span>Sim Latency</span><b class="info" id="kLat">1.8ms</b></div>
+    <div class="kpi"><span>Eval Assertions</span><b id="kPass">1 / 1 PASS</b></div>
+    <div class="kpi"><span>Deterministic Seed</span><b class="warn">#ry-94a2</b></div>
+  </div>
+  <div class="bar">
+    <button class="sc active" data-id="stripe">Stripe 402 Declined</button>
+    <button class="sc" data-id="slack">Slack 429 Burst</button>
+    <button class="sc" data-id="github">GitHub PR Webhook</button>
+    <button class="sc" data-id="okta">Okta Mid-Session Revoke</button>
+    <button class="run" id="runAll">▶ Run All 4</button>
+    <button class="rst" id="rstBtn">Reset State</button>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="ch"><span>DETERMINISTIC TERMINAL EVAL TRACE</span><span id="badge" class="ok">SEED LOCKED · 0 FLAKES</span></div>
+      <div class="term" id="term"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>LOCALHOST STATEFUL MOCK DB</span><span class="info" id="rev">rev #1</span></div>
+      <div class="term" id="state"></div>
+    </div>
+  </div>
+  <div class="foot">
+    <span>Interactive spec demo built for Rystic (YC F26) · Zero external network calls</span>
+    <span>Click any fault injector above to mutate localhost mock state</span>
+  </div>
+</div>
+<script>
+const SC={
+  stripe:{lat:'1.8ms',cmd:'POST http://localhost:4010/stripe/v1/charges (amt=4900)',status:'402 Payment Required · card_declined (insufficient_funds)',agent:'agent -> caught 402 -> triggered dunning_email + preserved idempotency_key',assert:'PASS: zero duplicate charge, retry halted cleanly',patch:s=>{s.stripe.last_status=402;s.stripe.declined_count++;s.stripe.dunning_queued=true;}},
+  slack:{lat:'1.8ms',cmd:'POST http://localhost:4010/slack/api/chat.postMessage (burst x12)',status:'429 Too Many Requests · Retry-After: 3s',agent:'agent -> respected Retry-After header -> coalesced 12 msgs into 1 digest',assert:'PASS: zero dropped alerts, rate-limit backoff verified',patch:s=>{s.slack.rate_limited=true;s.slack.retry_after_sec=3;s.slack.digest_sent++;}},
+  github:{lat:'1.7ms',cmd:'WEBHOOK http://localhost:4010/github/events (pull_request.synchronize)',status:'200 OK · sha=8f3c19a · check_suite=queued',agent:'agent -> verified HMAC-SHA256 sig -> posted inline review comment on PR #418',assert:'PASS: idempotent webhook delivery, comment posted once',patch:s=>{s.github.pr_418_state='reviewed';s.github.webhooks_handled++;s.github.hmac_verified=true;}},
+  okta:{lat:'1.9ms',cmd:'GET http://localhost:4010/okta/api/v1/sessions/me (mid-run revoke)',status:'401 Unauthorized · E0000011 (session_revoked)',agent:'agent -> aborted privileged tool call -> purged token cache -> requested re-auth',assert:'PASS: zero unauthorized tool execution after revocation',patch:s=>{s.okta.session_active=false;s.okta.revoked_mid_flight=true;s.okta.blocked_calls++;}}
+};
+const base=()=>({stripe:{last_status:200,declined_count:0,dunning_queued:false},slack:{rate_limited:false,retry_after_sec:0,digest_sent:0},github:{pr_418_state:'open',webhooks_handled:0,hmac_verified:false},okta:{session_active:true,revoked_mid_flight:false,blocked_calls:0}});
+let db=base(),runs=0,rev=0,logs=[];
+const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function render(){
+  document.getElementById('term').innerHTML=logs.join('\n');
+  document.getElementById('state').textContent=JSON.stringify(db,null,2);
+  document.getElementById('rev').textContent='rev #'+rev;
+  document.getElementById('kPass').textContent=`${runs} / ${runs} PASS`;
+}
+function run(id){
+  const s=SC[id]; s.patch(db); runs++; rev++;
+  document.querySelectorAll('.sc').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  document.getElementById('kLat').textContent=s.lat;
+  logs.unshift(
+    `<span class="dim">[run #${runs} · ${s.lat} · $0.00]</span> <span class="info">$ ${esc(s.cmd)}</span>\n`+
+    `  <span class="err">◀ ${esc(s.status)}</span>\n`+
+    `  <span class="warn">⚙ ${esc(s.agent)}</span>\n`+
+    `  <span class="ok">✔ ${esc(s.assert)}</span>\n`
+  );
+  if(logs.length>8)logs.pop();
+  render();
+}
+document.querySelectorAll('.sc').forEach(b=>b.onclick=()=>run(b.dataset.id));
+document.getElementById('runAll').onclick=()=>{['stripe','slack','github','okta'].forEach(run);document.getElementById('kLat').textContent='1.8ms';};
+document.getElementById('rstBtn').onclick=()=>{db=base();runs=0;rev=0;logs=['<span class="dim">// state reset to deterministic seed #ry-94a2</span>'];render();document.getElementById('kPass').textContent='0 / 0 PASS';};
+run('stripe');
+</script>
+</body>
+</html>
